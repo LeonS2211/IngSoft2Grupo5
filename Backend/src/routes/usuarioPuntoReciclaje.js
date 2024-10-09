@@ -1,7 +1,7 @@
 import express from 'express'
-import citaController from '../controllers/citaController.js';
+import usuarioPuntoReciclajeController from '../controllers/usuarioPuntoReciclajeController.js';
 
-const { findAll, create, remove, findOne, update } = citaController
+const { findAll, create, remove, findOne, update } = usuarioPuntoReciclajeController
 
 const router = express.Router()
 

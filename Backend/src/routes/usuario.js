@@ -1,14 +1,14 @@
 import express from 'express'
-import horarioController from '../controllers/horarioController.js';
+import usuarioController from '../controllers/usuarioController.js';
 
-const { findAll, create, remove, findOne, update } = horarioController
+const { findAll, create, findOne, remove, update } = usuarioController
 
 const router = express.Router()
 
 router.get("/", findAll)
 router.post("/", create)
-router.delete("/:id", remove)
 router.get("/:id", findOne)
 router.put("/", update)
+router.delete("/:id", remove)
 
 export default router;

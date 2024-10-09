@@ -1,7 +1,7 @@
-GET https://progwebti2-grupo2-webapp.azurewebsites.net/carrera
+GET https://localhost:3001/usuario
 ########
 
-POST https://progwebti2-grupo2-webapp.azurewebsites.net/carrera
+POST https://localhost:3001/usuario
 Content-Type: application/json
 
     { "nombre": "Ingenieria de Sistemas", "idUniversidad": 1}

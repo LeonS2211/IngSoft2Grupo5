@@ -1,14 +1,14 @@
 import express from 'express'
-import carreraController from '../controllers/carreraController.js';
+import ubicacionController from '../controllers/ubicacionController.js';
 
-const { findAll, findOne, create, remove, update} = carreraController
+const { findAll, create, remove, findOne, update } = ubicacionController
 
 const router = express.Router()
 
 router.get("/", findAll)
-router.get("/:id", findOne)
 router.post("/", create)
 router.put("/", update)
 router.delete("/:id", remove)
+router.get("/:id", findOne)
 
 export default router;

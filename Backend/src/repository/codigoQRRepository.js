@@ -1,9 +1,9 @@
-import Carrera from '../models/carrera.js'
-import Universidad from '../models/universidad.js'
+import CodigoQR from '../models/codigoQR.js'
+import PuntoReciclaje from '../models/puntoReciclaje.js'
 
 const findAll = async () => {
     try {
-        const result = await Carrera.findAll({include: Universidad});
+        const result = await CodigoQR.findAll({include: PuntoReciclaje});
         console.log(result)
         return result;
 
@@ -17,7 +17,7 @@ const findAll = async () => {
 
 const findOne = async (id) => {
     try {
-        return await Carrera.findOne({
+        return await CodigoQR.findOne({
             where: {
                 id
             }
@@ -29,12 +29,12 @@ const findOne = async (id) => {
     }
 }
 
-const create = async (carrera) => {
+const create = async (codigoQR) => {
     try {
 
-        const newCarrera = await Carrera.create(carrera);
+        const newCodigoQR = await CodigoQR.create(codigoQR);
 
-        return newCarrera;
+        return newCodigoQR;
 
     } catch(err) {
         console.error(err)
@@ -45,7 +45,7 @@ const create = async (carrera) => {
 
 const remove = async (id) => {
     try {
-        await Carrera.destroy({
+        await CodigoQR.destroy({
             where: {
                 id
             }
@@ -60,19 +60,19 @@ const remove = async (id) => {
 
 }
 
-const update = async (carrera) => {
+const update = async (codigoQR) => {
     try {
-        const foundCarrera =  await Carrera.findOne({
+        const foundCodigoQR =  await CodigoQR.findOne({
             where: {
-                id: carrera.id
+                id: codigoQR.id
             }
         })
   
-        foundCarrera.set(carrera)
+        foundCodigoQR.set(codigoQR)
   
-        foundCarrera.save()
+        foundCodigoQR.save()
   
-        return foundCarrera;
+        return foundCodigoQR;
   
     }
     catch(err) {
@@ -81,6 +81,6 @@ const update = async (carrera) => {
     }
   }
 
-const CarrerasRepository = { findAll, findOne, create, remove, update};
+const CodigoQRRepository = { findAll, findOne, create, remove, update};
 
-export default CarrerasRepository; 
+export default CodigoQRRepository; 

@@ -1,9 +1,8 @@
-import Cita from '../models/cita.js'
-import Curso from '../models/curso.js'
+import Usuario from '../models/usuario.js'
 
 const findAll = async () => {
     try {
-        const result = await Cita.findAll({include: Curso});
+        const result = await Usuario.findAll();
         console.log(result)
         return result;
 
@@ -14,23 +13,10 @@ const findAll = async () => {
     }
 }
 
-const create = async (cita) => {
-    try {
-
-        const newCita = await Cita.create(cita);
-
-        return newCita;
-
-    } catch(err) {
-        console.error(err)
-
-        return null;
-    }
-}
 
 const findOne = async (id) => {
     try {
-        return await Cita.findOne({
+        return await Usuario.findOne({
             where: {
                 id
             }
@@ -42,10 +28,23 @@ const findOne = async (id) => {
     }
 }
 
+const create = async (usuario) => {
+    try {
+
+        const newUsuario = await Usuario.create(usuario);
+
+        return newUsuario;
+
+    } catch(err) {
+        console.error(err)
+
+        return null;
+    }
+}
 
 const remove = async (id) => {
     try {
-        await Cita.destroy({
+        await Usuario.destroy({
             where: {
                 id
             }
@@ -60,19 +59,19 @@ const remove = async (id) => {
 
 }
 
-const update = async (cita) => {
+const update = async (usuario) => {
     try {
-        const foundCita =  await Cita.findOne({
+        const foundUsuario =  await Usuario.findOne({
             where: {
-                id: cita.id
+                id: usuario.id
             }
         })
   
-        foundCita.set(cita)
+        foundUsuario.set(usuario)
   
-        foundCita.save()
+        foundUsuario.save()
   
-        return foundCita;
+        return foundUsuario;
   
     }
     catch(err) {
@@ -81,6 +80,6 @@ const update = async (cita) => {
     }
   }
 
-const CitasRepository = { findAll, create, findOne, remove, update };
+const UsuarioRepository = { findAll, findOne, create, remove, update};
 
-export default CitasRepository; 
+export default UsuarioRepository; 

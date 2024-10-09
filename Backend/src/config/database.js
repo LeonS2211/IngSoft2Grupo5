@@ -3,10 +3,10 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-const hostname = process.env.HOSTNAME || 'prograweb-ti2.postgres.database.azure.com'
+const hostname = process.env.HOSTNAME || '127.0.0.1'
 const username = process.env.BDUSER || 'postgres'
-const password = process.env.PASSWORD || 'password123.'
-const database = process.env.DATABASE || 'midb'
+const password = process.env.PASSWORD || '123'
+const database = process.env.DATABASE || 'ecopointdb'
 const port = process.env.DBPORT || 5432
 const dialect = process.env.DIALECT || 'postgres'
 

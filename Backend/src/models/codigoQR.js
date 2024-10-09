@@ -1,18 +1,19 @@
-// {id: 1, descripcion: "Universidad de Lima"}
+// {id: 1, contenido: QRTX9527HJ} 
 
 import { DataTypes } from "sequelize"
 import sequelize from '../config/database.js'
 
-const Universidad = sequelize.define('universidades', {
+const CodigoQR = sequelize.define('codigosQR', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false
     },
-    descripcion: {
-        type: DataTypes.STRING
+    contenido: {
+        type: DataTypes.STRING(10)
     }
 })
 
-export default Universidad
+
+export default CodigoQR

@@ -1,14 +1,14 @@
 import express from 'express'
-import personaCursoController from '../controllers/personaCursoController.js';
+import codigoQRController from '../controllers/codigoQRController.js';
 
-const { findAll, findOne, create, remove, update} = personaCursoController
+const { findAll, create, remove, findOne, update } = codigoQRController
 
 const router = express.Router()
 
 router.get("/", findAll)
 router.post("/", create)
+router.put("/", update)
 router.delete("/:id", remove)
 router.get("/:id", findOne)
-router.put("/", update)
 
 export default router;

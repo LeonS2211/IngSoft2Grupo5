@@ -1,14 +1,14 @@
 import express from 'express'
-import calificacionController from '../controllers/calificacionController.js';
+import usuarioAmigoController from '../controllers/usuarioAmigoController.js';
 
-const { findAll, create, findOne, remove, update } = calificacionController
+const { findAll, create, remove, findOne, update } = usuarioAmigoController
 
 const router = express.Router()
 
 router.get("/", findAll)
 router.post("/", create)
-router.get("/:id", findOne)
 router.put("/", update)
 router.delete("/:id", remove)
+router.get("/:id", findOne)
 
 export default router;

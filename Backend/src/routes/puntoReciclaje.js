@@ -1,14 +1,14 @@
 import express from 'express'
-import personaController from '../controllers/personaController.js';
+import puntoReciclajeController from '../controllers/puntoReciclajeController.js';
 
-const { findAll, create, update, findOne, remove} = personaController
+const { findAll, create, remove, findOne, update } = puntoReciclajeController
 
 const router = express.Router()
 
 router.get("/", findAll)
 router.post("/", create)
 router.put("/", update)
-router.get("/:id", findOne)
 router.delete("/:id", remove)
+router.get("/:id", findOne)
 
 export default router;

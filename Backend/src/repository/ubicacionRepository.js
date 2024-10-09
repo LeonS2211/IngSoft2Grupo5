@@ -1,9 +1,9 @@
-import Rol from '../models/rol.js'
-import Persona from '../models/persona.js'
+import Ubicacion from '../models/ubicacion.js'
+import PuntoReciclaje from '../models/puntoReciclaje.js'
 
 const findAll = async () => {
     try {
-        const result = await Rol.findAll({include: Persona});
+        const result = await Ubicacion.findAll({include: PuntoReciclaje});
         console.log(result)
         return result;
 
@@ -17,7 +17,7 @@ const findAll = async () => {
 
 const findOne = async (id) => {
     try {
-        return await Rol.findOne({
+        return await Ubicacion.findOne({
             where: {
                 id
             }
@@ -29,12 +29,12 @@ const findOne = async (id) => {
     }
 }
 
-const create = async (rol) => {
+const create = async (ubicacion) => {
     try {
 
-        const newRol = await Rol.create(rol);
+        const newUbicacion = await Ubicacion.create(ubicacion);
 
-        return newRol;
+        return newUbicacion;
 
     } catch(err) {
         console.error(err)
@@ -45,7 +45,7 @@ const create = async (rol) => {
 
 const remove = async (id) => {
     try {
-        await Rol.destroy({
+        await Ubicacion.destroy({
             where: {
                 id
             }
@@ -60,19 +60,19 @@ const remove = async (id) => {
 
 }
 
-const update = async (rol) => {
+const update = async (ubicacion) => {
     try {
-        const foundRol =  await Rol.findOne({
+        const foundUbicacion =  await Ubicacion.findOne({
             where: {
-                id: rol.id
+                id: ubicacion.id
             }
         })
   
-        foundRol.set(rol)
+        foundUbicacion.set(ubicacion)
   
-        foundRol.save()
+        foundUbicacion.save()
   
-        return foundRol;
+        return foundUbicacion;
   
     }
     catch(err) {
@@ -81,6 +81,6 @@ const update = async (rol) => {
     }
   }
 
-const rolesRepository = { findAll, findOne, create, remove, update};
+const UbicacionRepository = { findAll, findOne, create, remove, update};
 
-export default rolesRepository; 
+export default UbicacionRepository; 

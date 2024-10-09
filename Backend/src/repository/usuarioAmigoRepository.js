@@ -1,9 +1,10 @@
-import Curso from '../models/curso.js'
-import Carrera from '../models/carrera.js'
+import Amigo from '../models/usuario.js';
+import Usuario from '../models/usuario.js';
+import UsuarioAmigo from '../models/usuarioAmigo.js';
 
 const findAll = async () => {
     try {
-        const result = await Curso.findAll({include: Carrera});
+        const result = await UsuarioAmigo.findAll({include: [Usuario, Amigo]});
         console.log(result)
         return result;
 
@@ -17,7 +18,7 @@ const findAll = async () => {
 
 const findOne = async (id) => {
     try {
-        return await Curso.findOne({
+        return await UsuarioAmigo.findOne({
             where: {
                 id
             }
@@ -29,12 +30,12 @@ const findOne = async (id) => {
     }
 }
 
-const create = async (curso) => {
+const create = async (usuarioAmigo) => {
     try {
 
-        const newCurso = await Curso.create(curso);
+        const newUsuarioAmigo = await UsuarioAmigo.create(usuarioAmigo);
 
-        return newCurso;
+        return newUsuarioAmigo;
 
     } catch(err) {
         console.error(err)
@@ -45,7 +46,7 @@ const create = async (curso) => {
 
 const remove = async (id) => {
     try {
-        await Curso.destroy({
+        await UsuarioAmigo.destroy({
             where: {
                 id
             }
@@ -60,19 +61,19 @@ const remove = async (id) => {
 
 }
 
-const update = async (curso) => {
+const update = async (usuarioAmigo) => {
     try {
-        const foundCurso =  await Curso.findOne({
+        const foundUsuarioAmigo =  await UsuarioAmigo.findOne({
             where: {
-                id: curso.id
+                id: usuarioAmigo.id
             }
         })
   
-        foundCurso.set(curso)
+        foundUsuarioAmigo.set(usuarioAmigo)
   
-        foundCurso.save()
+        foundUsuarioAmigo.save()
   
-        return foundCurso;
+        return foundUsuarioAmigo;
   
     }
     catch(err) {
@@ -81,6 +82,6 @@ const update = async (curso) => {
     }
   }
 
-const CursosRepository = { findAll, findOne, create, remove, update};
+const UsuarioAmigoRepository = { findAll, findOne, create, remove, update};
 
-export default CursosRepository; 
+export default UsuarioAmigoRepository; 
