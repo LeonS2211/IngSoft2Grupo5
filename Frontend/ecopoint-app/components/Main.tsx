@@ -1,9 +1,9 @@
-import { StyleSheet, Text, View} from 'react-native';
+import { StyleSheet, Text, View } from "react-native";
 
 export function Main() {
-    return (
+  return (
     <View>
-        <Text>Open up App.tsx to start working!</Text>
+      <Text>Open up App.tsx to start working!</Text>
     </View>
-    );
+  );
 }
