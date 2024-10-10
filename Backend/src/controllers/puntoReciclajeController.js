@@ -20,12 +20,12 @@ const create = async (req, res) => {
     const idUbicacion = req.body.idUbicacion;
     const idCodigoQR = req.body.idCodigoQR;
 
-    const Curso = await UbicacionRepository.findOne(idUbicacion) ?? null;
+    const Ubicacion = await UbicacionRepository.findOne(idUbicacion) ?? null;
     const CodigoQR = await CodigoQRRepository.findOne(idCodigoQR) ?? null;
 
     let result = null;
 
-    if (CodigoQR && Curso)
+    if (CodigoQR && Ubicacion)
         result = await PuntoReciclajeRepository.create(req.body);
 
     return sendResponse(result, res);

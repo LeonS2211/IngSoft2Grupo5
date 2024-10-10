@@ -1,10 +1,11 @@
-import Amigo from '../models/usuario.js';
 import Usuario from '../models/usuario.js';
 import UsuarioAmigo from '../models/usuarioAmigo.js';
 
+{'Amigo', 'Usuario'}  Usuario;
+
 const findAll = async () => {
     try {
-        const result = await UsuarioAmigo.findAll({include: [Usuario, Amigo]});
+        const result = await UsuarioAmigo.findAll({include: ['Usuario', 'Amigo']});
         console.log(result)
         return result;
 

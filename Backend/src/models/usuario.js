@@ -1,4 +1,4 @@
-// {id: 1, email: "broder@gmail.com", contraseña: "1234", puntos: 20, codigoAmistad:"ABCD1234EF"}
+// {id: 1, email: "broder@gmail.com", contraseña: "1234", puntos: 0, codigoAmistad:"ABCD1234EF"}
 
 import { DataTypes } from "sequelize"
 import sequelize from '../config/database.js'
@@ -11,16 +11,23 @@ const Usuario = sequelize.define('usuarios', {
         allowNull: false
     },
     email: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            isEmail: true,
+        }
     },
     contraseña: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false
     },
     puntos: {
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
     codigoAmistad: {
-        type: DataTypes.STRING(10)
+        type: DataTypes.STRING(10),
+        allowNull: false
     }
 })
 

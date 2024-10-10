@@ -1,5 +1,4 @@
 import CodigoQRRepository from "../repository/codigoQRRepository.js";
-import PuntoReciclajeRepository from "../repository/puntoReciclajeRepository.js";
 
 const findAll = async (req, res) => {
     const result = await CodigoQRRepository.findAll();
@@ -16,14 +15,7 @@ const findOne = async (req, res) => {
 
 const create = async (req, res) => {
 
-    const idPuntoReciclaje = req.body.idPuntoReciclaje;
-
-    const puntoReciclaje = await PuntoReciclajeRepository.findOne(idPuntoReciclaje) ?? null;
-
-    let result = null;
-
-    if (puntoReciclaje)
-        result = await CodigoQRRepository.create(req.body);
+    const result = await CodigoQRRepository.create(req.body);
 
     return sendResponse(result, res);
 }

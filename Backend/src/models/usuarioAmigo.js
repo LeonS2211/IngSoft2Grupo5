@@ -13,30 +13,34 @@ const UsuarioAmigo = sequelize.define('usuarioAmigos', {
         allowNull: false
     },
     idUsuario: {
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
     idAmigo: {
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
+        allowNull: false
     }
 })
 
-UsuarioAmigo.belongsTo(Usuario, {
-    foreignKey: 'idUsuario',
+Amigo.hasMany(UsuarioAmigo, {
+    foreignKey: 'idAmigo',
+    as: 'Amigo',
     targetId: 'id'
 })
-
 UsuarioAmigo.belongsTo(Amigo, {
     foreignKey: 'idAmigo',
+    as: 'Amigo',
     targetId: 'id'
 })
 
 Usuario.hasMany(UsuarioAmigo, {
     foreignKey: 'idUsuario',
+    as: 'Usuario',
     targetId: 'id'
 })
-
-Amigo.hasMany(UsuarioAmigo, {
-    foreignKey: 'idAmigo',
+UsuarioAmigo.belongsTo(Usuario, {
+    foreignKey: 'idUsuario',
+    as: 'Usuario',
     targetId: 'id'
 })
 

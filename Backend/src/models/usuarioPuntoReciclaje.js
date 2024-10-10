@@ -13,10 +13,12 @@ const UsuarioPuntoReciclaje = sequelize.define('usuarioPuntoReciclajes', {
         allowNull: false
     },
     idUsuario: {
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
     idPuntoReciclaje: {
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
+        allowNull: false
     }
 })
 

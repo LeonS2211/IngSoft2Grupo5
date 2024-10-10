@@ -26,7 +26,7 @@ const create = async (req, res) => {
 
     let result = null;
 
-    if (Usuario && Amigo)
+    if (Usuario && Amigo && (Usuario != Amigo))
         result = await UsuarioAmigoRepository.create(req.body);
 
     return sendResponse(result, res);

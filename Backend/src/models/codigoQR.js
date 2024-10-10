@@ -11,7 +11,8 @@ const CodigoQR = sequelize.define('codigosQR', {
         allowNull: false
     },
     contenido: {
-        type: DataTypes.STRING(10)
+        type: DataTypes.STRING(10),
+        allowNull: false
     }
 })
 

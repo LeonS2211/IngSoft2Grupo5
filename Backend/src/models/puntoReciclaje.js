@@ -5,7 +5,7 @@ import sequelize from '../config/database.js'
 import Ubicacion from "./ubicacion.js"
 import CodigoQR from "./codigoQR.js"
 
-const puntoReciclaje = sequelize.define('puntoReciclajes', {
+const PuntoReciclaje = sequelize.define('puntoReciclajes', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -13,27 +13,40 @@ const puntoReciclaje = sequelize.define('puntoReciclajes', {
         allowNull: false
     },
     idUbicacion: {
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
     idCodigoQR: {
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
     nombre: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false
     },
     descripcion: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false
     }
 })
 
-Ubicacion.belongsTo(puntoReciclaje, {
+
+Ubicacion.hasOne(PuntoReciclaje, {
+    foreignKey: 'idUbicacion',
+    targetId: 'id'
+})
+PuntoReciclaje.belongsTo(Ubicacion, {
     foreignKey: 'idUbicacion',
     targetId: 'id'
 })
 
-CodigoQR.belongsTo(puntoReciclaje, {
+CodigoQR.hasOne(PuntoReciclaje, {
+    foreignKey: 'idCodigoQR',
+    targetId: 'id'
+})
+PuntoReciclaje.belongsTo(CodigoQR, {
     foreignKey: 'idCodigoQR',
     targetId: 'id'
 })
 
-export default puntoReciclaje
+export default PuntoReciclaje

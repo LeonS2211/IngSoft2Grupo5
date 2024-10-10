@@ -11,10 +11,12 @@ const Ubicacion = sequelize.define('ubicaciones', {
         allowNull: false
     },
     latitud: {
-        type: DataTypes.FLOAT
+        type: DataTypes.FLOAT,
+        allowNull: false
     },
     longitud: {
-        type: DataTypes.FLOAT
+        type: DataTypes.FLOAT,
+        allowNull: false
     },
 })
 

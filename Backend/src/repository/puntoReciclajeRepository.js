@@ -4,7 +4,7 @@ import PuntoReciclaje from '../models/puntoReciclaje.js'
 
 const findAll = async () => {
     try {
-        const result = await PuntoReciclaje.findAll({include: [CodigoQR, Ubicacion]});
+        const result = await PuntoReciclaje.findAll({include: [Ubicacion, CodigoQR]});
         console.log(result)
         return result;
 
