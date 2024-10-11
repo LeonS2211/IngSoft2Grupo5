@@ -8,7 +8,6 @@ export function Main() {
       <Image source={trash} style={styles.logo} />
      
       
-      {/* Título de la pantalla */}
       <Text style={styles.title}>ECOPOINT</Text>
 
       {/* Botones de acción con Link para la navegación */}
@@ -29,30 +28,35 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
+  
+    paddingTop : 5,
   },
   logo: {
     width: 150,
     height: 150,
-    marginBottom: 30,
+    marginBottom: 45,
+    
   },
   title: {
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: 'bold',
-    marginBottom: 50,
+    marginBottom: 24,
     color: '#333333',
   },
   buttonPrimary: {
     width: '80%',
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 5,
     backgroundColor: '#DFF2C6',
     alignItems: 'center',
     marginVertical: 10,
+    marginBottom: 25,
   },
   buttonTextPrimary: {
     fontSize: 16,
     color: '#333333',
     textAlign: 'center',
+    fontWeight: 'bold', 
   },
   buttonSecondary: {
     width: '80%',
@@ -61,6 +65,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#52734D',
     alignItems: 'center',
     marginVertical: 10,
+    
   },
   buttonTextSecondary: {
     fontSize: 16,
