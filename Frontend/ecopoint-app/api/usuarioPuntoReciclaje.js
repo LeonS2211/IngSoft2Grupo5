@@ -20,6 +20,6 @@ const remove = async (id) => {
   return await Base.remove(newEndpoint);
 };
 
-const CitasApi = { create, findAll, findOne, update, remove };
+const UsuariosPuntoReciclajeApi = { create, findAll, findOne, update, remove };
 
-export default CitasApi;
+export default UsuariosPuntoReciclajeApi;
