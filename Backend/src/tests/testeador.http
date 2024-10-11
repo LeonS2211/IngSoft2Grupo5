@@ -1,0 +1,71 @@
+GET http://localhost:3001/usuarioAmigo
+########
+
+POST http://localhost:3001/usuario
+Content-Type: application/json
+
+{
+ "email": "broder2@gmail.com", 
+ "contraseña": "1234", 
+ "puntos": 0, 
+ "codigoAmistad":""
+}
+###
+POST http://localhost:3001/codigoQR
+Content-Type: application/json
+
+{
+ "contenido": "ABCD1234TY"
+}
+###
+POST http://localhost:3001/ubicacion
+Content-Type: application/json
+
+{
+ "latitud": 68.9056,
+ "longitud": 45.67548
+}
+###
+POST http://localhost:3001/puntoReciclaje
+Content-Type: application/json
+
+{
+ "idUbicacion": 1,
+ "idCodigoQR": 1,
+ "nombre": "Universidad de Lima", 
+ "descripcion": "cerca del edificio x, contenedor de color gris"
+}
+###
+POST http://localhost:3001/usuarioPuntoReciclaje
+Content-Type: application/json
+
+{
+ "idUsuario": 1,
+ "idPuntoReciclaje": 1
+}
+###
+POST http://localhost:3001/usuarioAmigo
+Content-Type: application/json
+
+{
+ "idUsuario": 1,
+ "idAmigo": 2
+}
+###
+
+PUT http://localhost:3001/usuario
+Content-Type: application/json
+
+{
+  "id": 1,
+  "puntos": 20
+}
+
+###
+
+GET http://localhost:3001/puntoReciclaje/1
+###
+
+DELETE http://localhost:3001/usuario/1
+
+########
