@@ -1,26 +1,29 @@
-import Base from "./base";
+import Base from './base';
 
-const endpoint = "/usuario";
+const endpoint = '/usuario';
 
-const create = async (request) => await Base.post(endpoint, request);
+const create = async (request) => {
+  return await Base.post(endpoint, request);
+};
 
-const findAll = async () => await Base.get(endpoint);
+const findAll = async () => {
+  return await Base.get(endpoint);
+};
 
 const findOne = async (id) => {
-  const newEndpoint = endpoint.concat("/", id);
-
+  const newEndpoint = endpoint.concat('/', id);
   return await Base.get(newEndpoint);
 };
 
-const update = async (request) => await Base.put(endpoint, request);
+const update = async (request) => {
+  return await Base.put(endpoint, request);
+};
 
 const remove = async (id) => {
-  const newEndpoint = endpoint.concat("/", id);
-
+  const newEndpoint = endpoint.concat('/', id);
   return await Base.remove(newEndpoint);
 };
 
 const UsuariosApi = { create, findAll, findOne, update, remove };
-
 
 export default UsuariosApi;
