@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import BotBar from "../../components/BotBar";
-import { useCameraPermissions } from "expo-camera";
+import { CameraView, useCameraPermissions } from "expo-camera";
 export default function ScannerQR() {
   const { Ubicacion } = useLocalSearchParams();
   const [permission, requestPermission] = useCameraPermissions();
@@ -24,7 +24,13 @@ export default function ScannerQR() {
         </View>
       ) : (
         <View>
-          <Text>Camara</Text>
+          <CameraView
+            style={styles.camera}
+            facing="back"
+            onBarcodeScanned={({ data }) => {
+              console.log(data);
+            }}
+          ></CameraView>
         </View>
       )}
 
@@ -87,5 +93,9 @@ const styles = StyleSheet.create({
     height: 6,
     backgroundColor: "black",
     borderRadius: 3,
+  },
+  camera: {
+    width: "100%",
+    height: 400,
   },
 });
