@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons"; // Para los iconos de navegación
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Callout, Marker } from "react-native-maps";
 import BotBar from "../components/BotBar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Location from "expo-location";
 import markers from "../Models/ubicacionModel";
+import { Link } from "expo-router";
 
 const HomeScreen: React.FC = () => {
   const [origin, setOrigin] = useState({
@@ -66,7 +67,17 @@ const HomeScreen: React.FC = () => {
             showsMyLocationButton
           >
             {markers.map((marker, index) => (
-              <Marker key={index} coordinate={marker} />
+              <Marker key={index} coordinate={marker}>
+                <Link asChild href={`/scannerQR/${marker.name}`}>
+                  <Callout>
+                    <View style={styles.marker}>
+                      <Text style={styles.markerText}>
+                        Ir a escanear el QR de {marker.name}
+                      </Text>
+                    </View>
+                  </Callout>
+                </Link>
+              </Marker>
             ))}
           </MapView>
         </View>
@@ -128,6 +139,8 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingBottom: 0,
   },
+  marker: { padding: 10, alignItems: "center" },
+  markerText: { fontSize: 16, textAlign: "center", color: "#000" },
 });
 
 export default HomeScreen;
