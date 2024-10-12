@@ -1,5 +1,5 @@
-import { IAutenticator } from './IAutenticator';
-import { IPerfil } from './IPerfil';
+import { IAutenticator } from "./IAutenticator";
+import { IPerfil } from "./IPerfil";
 
 export class Usuario implements IAutenticator, IPerfil {
   private nombre: string;
@@ -38,7 +38,7 @@ export class Usuario implements IAutenticator, IPerfil {
     correoElectronico: string,
     contraseña: string,
     numTelefono: number = 0,
-    puntajeUsuario: number = 0
+    puntajeUsuario: number = 0,
   ): Usuario {
     if (!Usuario.instance) {
       const codigoAmistad = Usuario.generarCodigoAmistad(); // Crear un código único
@@ -50,7 +50,7 @@ export class Usuario implements IAutenticator, IPerfil {
         contraseña,
         numTelefono,
         puntajeUsuario,
-        codigoAmistad
+        codigoAmistad,
       );
     }
     return Usuario.instance;
@@ -66,22 +66,25 @@ export class Usuario implements IAutenticator, IPerfil {
     return this.codigoAmistad; // Devuelve un único código de amistad
   }
 
-
   public inicioSesion(correo: string, contraseña: string): string {
     if (this.correoElectronico === correo && this.contraseña === contraseña) {
       return `Inicio de sesión exitoso para: ${this.nombre}`;
     } else {
-      return 'Credenciales incorrectas.';
+      return "Credenciales incorrectas.";
     }
   }
 
   public cerrarSesion(): void {
     Usuario.instance = null;
-    console.log('Sesión cerrada exitosamente.');
+    console.log("Sesión cerrada exitosamente.");
   }
 
   // Implementación de IPerfil
-  public setPerfil(nombre: string, correoElectronico: string, numTelefono: number): void {
+  public setPerfil(
+    nombre: string,
+    correoElectronico: string,
+    numTelefono: number,
+  ): void {
     this.nombre = nombre;
     this.correoElectronico = correoElectronico;
     this.numTelefono = numTelefono;
