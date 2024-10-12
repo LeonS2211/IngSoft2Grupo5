@@ -8,8 +8,16 @@ const useRegisterViewModel = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Expresión regular para validar el formato del correo electrónico
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   // Función para manejar el envío del formulario
   const onSubmit = async () => {
+    if (!emailRegex.test(email)) {
+      setErrorMessage('Por favor, introduce un correo electrónico válido.');
+      return;
+    }
+
     setIsLoading(true);
     setErrorMessage(null);
 
@@ -31,7 +39,7 @@ const useRegisterViewModel = () => {
       // Construir el objeto del usuario con los datos del formulario
       const newUser = {
         email,
-        contraseña : password,
+        contraseña: password,
         puntos, // obtenido de la instancia del usuario
         codigoAmistad, // generado por la clase Usuario
       };

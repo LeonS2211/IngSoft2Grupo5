@@ -7,12 +7,15 @@ const RegisterScreen: React.FC = () => {
   const { email, password, isLoading, errorMessage, setEmail, setPassword, onSubmit } = useRegisterViewModel();
 
   const handleRegister = async () => {
-    console.log('Email:', email);
-    console.log('Contraseña:', password); 
-  
     await onSubmit(); // Ejecutar el método para manejar el registro
   };
-  
+
+  // Expresión regular para validar el formato del correo electrónico
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // Determinar si el correo es válido
+  const isEmailValid = emailRegex.test(email);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Registrarse</Text>
@@ -32,8 +35,8 @@ const RegisterScreen: React.FC = () => {
         <TextInput
           style={styles.inputPassword}
           placeholder="Contraseña"
-          value={password} // Asegúrate de que el valor esté asignado
-          onChangeText={setPassword} // Asegúrate de que setPassword esté asignando el valor
+          value={password}
+          onChangeText={setPassword}
           secureTextEntry
         />
         <TouchableOpacity style={styles.showPassword}>
@@ -45,7 +48,11 @@ const RegisterScreen: React.FC = () => {
       {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
 
       {/* Botón de registrarse */}
-      <TouchableOpacity style={styles.registerButton} onPress={handleRegister} disabled={isLoading}>
+      <TouchableOpacity
+        style={[styles.registerButton, isEmailValid && styles.registerButtonActive]}
+        onPress={handleRegister}
+        disabled={isLoading || !isEmailValid} // Botón deshabilitado si el correo no es válido
+      >
         {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>REGISTRARSE</Text>}
       </TouchableOpacity>
 
@@ -60,98 +67,100 @@ const RegisterScreen: React.FC = () => {
   );
 };
 
-  
-  // Estilos
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 25,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#FAFAFA',
-    },
-    title: {
-      fontSize: 32,
-      fontWeight: 'bold',
-      marginBottom: 30,
-      color: '#2D2D2D',
-    },
-    input: {
-      width: '100%',
-      padding: 15,
-      borderRadius: 12,
-      borderWidth: 1,
-      borderColor: '#E6E6E6',
-      marginBottom: 15,
-      backgroundColor: '#FFFFFF',
-      shadowColor: '#171717',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-    },
-    passwordContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      width: '100%',
-      marginBottom: 15,
-    },
-    inputPassword: {
-      flex: 1,
-      padding: 15,
-      borderRadius: 12,
-      borderWidth: 1,
-      borderColor: '#E6E6E6',
-      backgroundColor: '#FFFFFF',
-      shadowColor: '#171717',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-    },
-    showPassword: {
-      position: 'absolute',
-      right: 15,
-    },
-    icon: {
-      width: 24,
-      height: 24,
-      tintColor: '#9E9E9E',
-    },
-    errorText: {
-      fontSize: 14,
-      color: 'red',
-      marginBottom: 10,
-    },
-    registerButton: {
-      width: '100%',
-      padding: 15,
-      borderRadius: 12,
-      backgroundColor: '#A8E6CF',
-      alignItems: 'center',
-      marginVertical: 20,
-      shadowColor: '#171717',
-      shadowOffset: { width: 0, height: 3 },
-      shadowOpacity: 0.3,
-      shadowRadius: 6,
-    },
-    buttonText: {
-      fontSize: 16,
-      fontWeight: 'bold',
-      color: '#FFFFFF',
-    },
-    loginTextContainer: {
-      flexDirection: 'row',
-      marginTop: 10,
-    },
-    loginText: {
-      fontSize: 14,
-      color: '#7D7D7D',
-    },
-    loginLink: {
-      fontSize: 14,
-      color: '#52734D',
-      fontWeight: 'bold',
-      textDecorationLine: 'underline',
-    },
-  });
+// Estilos
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FAFAFA',
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    marginBottom: 30,
+    color: '#2D2D2D',
+  },
+  input: {
+    width: '100%',
+    padding: 15,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E6E6E6',
+    marginBottom: 15,
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#171717',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 15,
+  },
+  inputPassword: {
+    flex: 1,
+    padding: 15,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E6E6E6',
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#171717',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  showPassword: {
+    position: 'absolute',
+    right: 15,
+  },
+  icon: {
+    width: 24,
+    height: 24,
+    tintColor: '#9E9E9E',
+  },
+  errorText: {
+    fontSize: 14,
+    color: 'red',
+    marginBottom: 10,
+  },
+  registerButton: {
+    width: '100%',
+    padding: 15,
+    borderRadius: 12,
+    backgroundColor: '#A8E6CF', // Color del botón deshabilitado
+    alignItems: 'center',
+    marginVertical: 20,
+    shadowColor: '#171717',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+  },
+  registerButtonActive: {
+    backgroundColor: '#4CAF50', // Color del botón activo (verde oscuro)
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  loginTextContainer: {
+    flexDirection: 'row',
+    marginTop: 10,
+  },
+  loginText: {
+    fontSize: 14,
+    color: '#7D7D7D',
+  },
+  loginLink: {
+    fontSize: 14,
+    color: '#52734D',
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+  },
+});
 
-  export default RegisterScreen;
+export default RegisterScreen;
