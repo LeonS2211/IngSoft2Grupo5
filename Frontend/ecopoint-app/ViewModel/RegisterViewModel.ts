@@ -1,68 +1,85 @@
-import { useState } from 'react';
-import CitasApi from '../api/usuario'; // Asegúrate de que el path sea correcto
+import { Usuario } from "./../Models/usuarioModel"; // Asegúrate de que el path sea correcto
+import { useState } from "react";
+import UsuariosApi from "../api/usuario"; // Asegúrate de que el path sea correcto
 
 const useRegisterViewModel = () => {
-  // Estado para capturar los datos del formulario
-  const [nombre, setNombre] = useState<string>('');
-  const [apellido, setApellido] = useState<string>('');
-  const [telefono, setTelefono] = useState<number | null>(null);
-  const [dni, setDni] = useState<number | null>(null);
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Expresión regular para validar el formato del correo electrónico
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   // Función para manejar el envío del formulario
   const onSubmit = async () => {
-    setIsLoading(true); // Iniciar el estado de carga
-    setErrorMessage(null); // Limpiar el mensaje de error
+    if (!emailRegex.test(email)) {
+      setErrorMessage("Por favor, introduce un correo electrónico válido.");
+      return;
+    }
 
-    // Construir el objeto del usuario con los datos del formulario
-    const newUser = {
-      nombre,
-      apellido,
-      telefono,
-      dni,
-      email,
-      password,
-    };
+    setIsLoading(true);
+    setErrorMessage(null);
 
     try {
-      // Llamada a la API usando CitasApi.create
-      const response = await CitasApi.create(newUser);
+      // Crear una instancia de Usuario con el email y password
+      const usuario = Usuario.crearCuenta(
+        "", // nombre vacío ya que no lo usaremos aquí
+        "", // apellido vacío ya que no lo usaremos aquí
+        email,
+        password,
+        0, // numTelefono como 0 o el valor que corresponda
+        0, // puntajeUsuario inicial
+      );
 
-      if (response.status === 200 || response.status === 201) {
-        alert('Registro exitoso');
+      // Obtener los puntos y el código de amistad desde la instancia del usuario
+      const puntos = usuario.getPuntajeUsuario();
+      const codigoAmistad = usuario.getCodigoAmistad(); // Ahora obtiene el código de amistad como string
+
+      // Construir el objeto del usuario con los datos del formulario
+      const newUser = {
+        email,
+        contraseña: password,
+        puntos, // obtenido de la instancia del usuario
+        codigoAmistad, // generado por la clase Usuario
+      };
+
+      // Llamada a la API usando UsuariosApi.create
+      const response = await UsuariosApi.create(newUser);
+
+      if (response?.status === 200 || response?.status === 201) {
+        alert("Registro exitoso");
       } else {
-        // Maneja errores de validación
-        if (response.data.errors) {
-          const errorMessages = response.data.errors.map((error) => error.message);
-          setErrorMessage(errorMessages.join(', '));
-        } else {
-          setErrorMessage(response.data.message || 'Hubo un error al registrar el usuario.');
-        }
+        setErrorMessage(
+          response?.data?.message || "Hubo un error al registrar el usuario.",
+        );
       }
-    } catch (error) {
-      console.error('Error al registrar el usuario:', error);
-      setErrorMessage('Error de conexión. Intenta nuevamente.');
+    } catch (error: any) {
+      console.error("Error al registrar el usuario:", error);
+
+      // Si el servidor devuelve un error específico
+      if (error.response) {
+        console.error("Error de respuesta del servidor:", error.response.data);
+        setErrorMessage(
+          error.response.data?.message || "Error en el servidor.",
+        );
+      } else if (error.request) {
+        console.error("No se recibió respuesta del servidor:", error.request);
+        setErrorMessage("No se recibió respuesta del servidor.");
+      } else {
+        console.error("Error al configurar la solicitud:", error.message);
+        setErrorMessage("Error en la configuración de la solicitud.");
+      }
     } finally {
       setIsLoading(false); // Finalizar el estado de carga
     }
   };
 
   return {
-    nombre,
-    apellido,
-    telefono,
-    dni,
     email,
     password,
     isLoading,
     errorMessage,
-    setNombre,
-    setApellido,
-    setTelefono,
-    setDni,
     setEmail,
     setPassword,
     onSubmit,
