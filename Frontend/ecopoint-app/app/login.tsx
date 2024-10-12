@@ -93,7 +93,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#FAFAFA',
-   
   },
   title: {
     fontSize: 28,
@@ -145,14 +144,6 @@ const styles = StyleSheet.create({
     color: 'red',
     fontSize: 14,
     marginBottom: 10,
-  },
-  forgotPasswordContainer: {
-    alignSelf: 'flex-end',
-  },
-  forgotPasswordText: {
-    fontSize: 14,
-    color: '#52734D',
-    fontWeight: 'bold',
   },
   loginButton: {
     width: '100%',

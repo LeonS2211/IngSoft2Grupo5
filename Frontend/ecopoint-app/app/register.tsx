@@ -4,49 +4,21 @@ import { Link } from 'expo-router';
 import useRegisterViewModel from '../ViewModel/RegisterViewModel';
 
 const RegisterScreen: React.FC = () => {
-  // Obtener estados y métodos del ViewModel
-  const {
-    nombre,
-    apellido,
-    telefono,
-    dni,
-    email,
-    password,
-    isLoading,
-    errorMessage,
-    setNombre,
-    setApellido,
-    setTelefono,
-    setDni,
-    setEmail,
-    setPassword,
-    onSubmit,
-  } = useRegisterViewModel();
+  const { email, password, isLoading, errorMessage, setEmail, setPassword, onSubmit } = useRegisterViewModel();
 
-  // Función para manejar el registro
   const handleRegister = async () => {
     await onSubmit(); // Ejecutar el método para manejar el registro
   };
 
+  // Expresión regular para validar el formato del correo electrónico
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // Determinar si el correo es válido
+  const isEmailValid = emailRegex.test(email);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Registrarse</Text>
-
-      {/* Campo de nombre */}
-      <TextInput
-        style={styles.input}
-        placeholder="Nombre"
-        value={nombre}
-        onChangeText={setNombre}
-      />
-
-      {/* Campo de apellido */}
-      <TextInput
-        style={styles.input}
-        placeholder="Apellido"
-        value={apellido}
-        onChangeText={setApellido}
-      />
 
       {/* Campo de correo electrónico */}
       <TextInput
@@ -72,34 +44,16 @@ const RegisterScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Campo de número de teléfono */}
-      <TextInput
-        style={styles.input}
-        placeholder="Número de teléfono"
-        value={telefono ? telefono.toString() : ''}
-        onChangeText={(text) => setTelefono(Number(text))}
-        keyboardType="phone-pad"
-      />
-
-      {/* Campo de DNI */}
-      <TextInput
-        style={styles.input}
-        placeholder="DNI"
-        value={dni ? dni.toString() : ''}
-        onChangeText={(text) => setDni(Number(text))}
-        keyboardType="number-pad"
-      />
-
       {/* Mensaje de error */}
       {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
 
       {/* Botón de registrarse */}
-      <TouchableOpacity style={styles.registerButton} onPress={handleRegister} disabled={isLoading}>
-        {isLoading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>REGISTRARSE</Text>
-        )}
+      <TouchableOpacity
+        style={[styles.registerButton, isEmailValid && styles.registerButtonActive]}
+        onPress={handleRegister}
+        disabled={isLoading || !isEmailValid} // Botón deshabilitado si el correo no es válido
+      >
+        {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>REGISTRARSE</Text>}
       </TouchableOpacity>
 
       {/* Texto para iniciar sesión */}
@@ -121,7 +75,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#FAFAFA',
-    paddingTop: 0,
   },
   title: {
     fontSize: 32,
@@ -178,13 +131,16 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 15,
     borderRadius: 12,
-    backgroundColor: '#A8E6CF',
+    backgroundColor: '#A8E6CF', // Color del botón deshabilitado
     alignItems: 'center',
     marginVertical: 20,
     shadowColor: '#171717',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
     shadowRadius: 6,
+  },
+  registerButtonActive: {
+    backgroundColor: '#4CAF50', // Color del botón activo (verde oscuro)
   },
   buttonText: {
     fontSize: 16,
