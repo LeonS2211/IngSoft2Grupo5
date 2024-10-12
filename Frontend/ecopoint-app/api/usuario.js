@@ -1,6 +1,6 @@
-import Base from './base';
+import Base from "./base";
 
-const endpoint = '/usuario';
+const endpoint = "/usuario";
 
 const create = async (request) => {
   return await Base.post(endpoint, request);
@@ -11,7 +11,7 @@ const findAll = async () => {
 };
 
 const findOne = async (id) => {
-  const newEndpoint = endpoint.concat('/', id);
+  const newEndpoint = endpoint.concat("/", id);
   return await Base.get(newEndpoint);
 };
 
@@ -20,10 +20,16 @@ const update = async (request) => {
 };
 
 const remove = async (id) => {
-  const newEndpoint = endpoint.concat('/', id);
+  const newEndpoint = endpoint.concat("/", id);
   return await Base.remove(newEndpoint);
 };
 
-const UsuariosApi = { create, findAll, findOne, update, remove };
+// Nueva función para verificar si el correo ya está registrado
+const verifyEmail = async (email) => {
+  const newEndpoint = endpoint.concat("/verificar-correo/", email);
+  return await Base.get(newEndpoint);
+};
+
+const UsuariosApi = { create, findAll, findOne, update, remove, verifyEmail };
 
 export default UsuariosApi;
