@@ -1,12 +1,48 @@
-import React from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
+import { router, useLocalSearchParams } from "expo-router";
 import BotBar from "../../components/BotBar";
 import { CameraView, useCameraPermissions } from "expo-camera";
+import codes from "../../Models/codigoQRModel";
 export default function ScannerQR() {
   const { Ubicacion } = useLocalSearchParams();
   const [permission, requestPermission] = useCameraPermissions();
+  const [isLoading, setIsLoading] = useState(false);
+  const [codigos, setCodigos] = useState<QRCode[]>([]);
+  const [scanned, setScanned] = useState(false);
   const isPermissionGranted = Boolean(permission?.granted);
+  type QRCode = {
+    contenido: string;
+  };
+  const validateQRCode = async (data: string): Promise<void> => {
+    setIsLoading(true);
+    setCodigos(codes);
+    setTimeout(() => {
+      setIsLoading(false);
+      if (codigos.some((codigitos) => codigitos.contenido === data)) {
+        console.log(data);
+        console.log(codigos);
+        router.push("scannerQR/scannerSuccess");
+      } else {
+        console.log(data);
+        console.log(codigos);
+        Alert.alert("Error", "El código QR no coincide con ningún registro.");
+        setScanned(false);
+      }
+    }, 3000);
+  };
+  const handleBarCodeScanned = ({ data }: { data: string }): void => {
+    console.log(data);
+    setScanned(true); // Evitar escaneos repetidos
+    validateQRCode(data); // Validar el código QR
+  };
   return (
     <View style={styles.container}>
       {/* Título */}
@@ -19,18 +55,29 @@ export default function ScannerQR() {
       {!isPermissionGranted ? (
         <View style={styles.qrContainer}>
           <Pressable onPress={requestPermission}>
-            <Text>Dar Permisos de camara</Text>
+            <Text>Dar permisos de cámara</Text>
           </Pressable>
         </View>
       ) : (
         <View>
-          <CameraView
-            style={styles.camera}
-            facing="back"
-            onBarcodeScanned={({ data }) => {
-              console.log(data);
-            }}
-          ></CameraView>
+          {!scanned ? (
+            <CameraView
+              style={styles.camera}
+              facing="back"
+              onBarcodeScanned={({ data }) => {
+                handleBarCodeScanned({ data });
+              }}
+            ></CameraView>
+          ) : (
+            <Text>Escaneando...</Text>
+          )}
+          {/* Mostrar un spinner mientras se valida el QR */}
+          {isLoading && (
+            <View style={styles.loaderContainer}>
+              <ActivityIndicator size="large" color="#3D550C" />
+              <Text>Validando código QR...</Text>
+            </View>
+          )}
         </View>
       )}
 
@@ -97,5 +144,9 @@ const styles = StyleSheet.create({
   camera: {
     width: "100%",
     height: 400,
+  },
+  loaderContainer: {
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
