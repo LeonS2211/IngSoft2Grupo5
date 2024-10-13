@@ -24,7 +24,6 @@ const remove = async (id) => {
   return await Base.remove(newEndpoint);
 };
 
-// Nueva función para verificar si el correo ya está registrado
 const verifyEmail = async (email) => {
   const newEndpoint = endpoint.concat("/verificar-correo/", email);
   return await Base.get(newEndpoint);

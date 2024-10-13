@@ -1,19 +1,28 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons"; // Para los iconos de navegación
+import { useRouter } from "expo-router"; // Uso de useRouter para la navegación
 
 const HomeScreen: React.FC = () => {
+  const router = useRouter(); // Hook de router para la navegación
+
   return (
     <View style={styles.container}>
       {/* Encabezado */}
       <View style={styles.header}>
         <Text style={styles.welcomeText}>¡Bienvenido!</Text>
-        <View style={styles.profileContainer}>
-          <Image
-            source={{ uri: "https://via.placeholder.com/50" }} // Foto del perfil, puedes cambiarlo por una imagen local
-            style={styles.profilePic}
-          />
-        </View>
+
+        {/* Imagen de perfil con navegación a ProfileScreen */}
+        <TouchableOpacity onPress={() => router.push("/profileScreen")}>
+          <View style={styles.profileContainer}>
+            <Image
+              source={{
+                uri: "https://img.icons8.com/ios-filled/50/000000/user-male-circle.png",
+              }} // Imagen predeterminada de usuario
+              style={styles.profilePic}
+            />
+          </View>
+        </TouchableOpacity>
       </View>
 
       {/* Ubicación actual */}
@@ -83,6 +92,7 @@ const styles = StyleSheet.create({
   profilePic: {
     width: "100%",
     height: "100%",
+    borderRadius: 25,
   },
   locationContainer: {
     flexDirection: "row",

@@ -8,7 +8,7 @@ export class Usuario implements IAutenticator, IPerfil {
   private contraseña: string;
   private numTelefono: number;
   private puntajeUsuario: number;
-  private codigoAmistad: string; // Cambié a singular
+  private codigoAmistad: string; // Cambiado a singular
 
   private static instance: Usuario | null = null;
 
@@ -58,6 +58,7 @@ export class Usuario implements IAutenticator, IPerfil {
 
   // Método para generar un código de amistad único
   private static generarCodigoAmistad(): string {
+    // Asegura la unicidad del código de amistad, puedes hacerlo con una validación externa
     return Math.random().toString(36).substring(2, 12); // Genera un código de 10 caracteres
   }
 
@@ -117,5 +118,11 @@ export class Usuario implements IAutenticator, IPerfil {
 
   public getPuntajeUsuario(): number {
     return this.puntajeUsuario;
+  }
+
+  // Método para reclamar recompensa por código de amistad
+  public reclamarRecompensa(usuarioAmigo: Usuario): void {
+    this.puntajeUsuario += 20; // Asigna 20 puntos al usuario logueado
+    usuarioAmigo.puntajeUsuario += 15; // Asigna 15 puntos al usuario amigo
   }
 }
