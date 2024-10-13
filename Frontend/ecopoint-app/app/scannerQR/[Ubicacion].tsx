@@ -29,6 +29,7 @@ export default function ScannerQR() {
       if (codigos.some((codigitos) => codigitos.contenido === data)) {
         console.log(data);
         console.log(codigos);
+        setScanned(false);
         router.push("scannerQR/scannerSuccess");
       } else {
         console.log(data);

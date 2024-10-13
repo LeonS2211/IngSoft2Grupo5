@@ -1,11 +1,11 @@
-GET http://localhost:3001/usuarioAmigo
+GET https://backgrupo5-production.up.railway.app
 ########
 
 POST http://localhost:3001/usuario
 Content-Type: application/json
 
 {
- "email": "broder2@gmail.com", 
+ "email": "test@gmail.com", 
  "contraseña": "1234", 
  "puntos": 0, 
  "codigoAmistad":""

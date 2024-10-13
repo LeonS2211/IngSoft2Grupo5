@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const URI = "http://localhost:3001";
+const URI = "http://localhost:3001"; //https://backgrupo5-production.up.railway.app
 
 const get = (endpoint) => {
   try {
