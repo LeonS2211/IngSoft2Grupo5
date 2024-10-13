@@ -1,17 +1,18 @@
 import { StyleSheet, Text, View, Image } from "react-native";
-const trash = require('../assets/trash.png');
-import {Link} from "expo-router";
+import { Link } from "expo-router";
+import React from "react";
+
+const trash = require("../assets/trash.png");
 
 export function Main() {
   return (
     <View style={styles.container}>
       <Image source={trash} style={styles.logo} />
-     
-      
+
       <Text style={styles.title}>ECOPOINT</Text>
 
       {/* Botones de acción con Link para la navegación */}
-      <Link href="/login" style={styles.buttonPrimary}>
+      <Link href="/mainmenu" style={styles.buttonPrimary}>
         <Text style={styles.buttonTextPrimary}>Ya tengo una cuenta</Text>
       </Link>
 
@@ -20,56 +21,53 @@ export function Main() {
       </Link>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-  
-    paddingTop : 5,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: 200,
+    height: 200,
     marginBottom: 45,
-    
+    resizeMode: "contain",
   },
   title: {
     fontSize: 30,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 24,
-    color: '#333333',
+    color: "#333333",
   },
   buttonPrimary: {
-    width: '80%',
+    width: "80%",
     padding: 15,
     borderRadius: 5,
-    backgroundColor: '#DFF2C6',
-    alignItems: 'center',
+    backgroundColor: "#DFF2C6",
+    alignItems: "center",
     marginVertical: 10,
     marginBottom: 25,
   },
   buttonTextPrimary: {
     fontSize: 16,
-    color: '#333333',
-    textAlign: 'center',
-    fontWeight: 'bold', 
+    color: "#333333",
+    textAlign: "center",
+    fontWeight: "bold",
   },
   buttonSecondary: {
-    width: '80%',
+    width: "80%",
     padding: 15,
     borderRadius: 10,
-    backgroundColor: '#52734D',
-    alignItems: 'center',
+    backgroundColor: "#52734D",
+    alignItems: "center",
     marginVertical: 10,
-    
   },
   buttonTextSecondary: {
     fontSize: 16,
-    color: '#FFFFFF',
-    textAlign: 'center',
+    color: "#FFFFFF",
+    textAlign: "center",
   },
 });
