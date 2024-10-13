@@ -12,7 +12,7 @@ export function Main() {
       <Text style={styles.title}>ECOPOINT</Text>
 
       {/* Botones de acción con Link para la navegación */}
-      <Link href="/login" style={styles.buttonPrimary}>
+      <Link href="/mainmenu" style={styles.buttonPrimary}>
         <Text style={styles.buttonTextPrimary}>Ya tengo una cuenta</Text>
       </Link>
 
@@ -29,13 +29,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#FFFFFF",
-
-    paddingTop: 5,
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: 200,
+    height: 200,
     marginBottom: 45,
+    resizeMode: "contain",
   },
   title: {
     fontSize: 30,

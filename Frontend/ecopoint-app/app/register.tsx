@@ -1,10 +1,26 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, ActivityIndicator, StyleSheet } from 'react-native';
-import { Link } from 'expo-router';
-import useRegisterViewModel from '../ViewModel/RegisterViewModel';
+import React from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+  StyleSheet,
+} from "react-native";
+import { Link } from "expo-router";
+import useRegisterViewModel from "../ViewModel/RegisterViewModel";
 
 const RegisterScreen: React.FC = () => {
-  const { email, password, isLoading, errorMessage, setEmail, setPassword, onSubmit } = useRegisterViewModel();
+  const {
+    email,
+    password,
+    isLoading,
+    errorMessage,
+    setEmail,
+    setPassword,
+    onSubmit,
+  } = useRegisterViewModel();
 
   const handleRegister = async () => {
     await onSubmit(); // Ejecutar el método para manejar el registro
@@ -40,7 +56,12 @@ const RegisterScreen: React.FC = () => {
           secureTextEntry
         />
         <TouchableOpacity style={styles.showPassword}>
-          <Image source={{ uri: 'https://img.icons8.com/ios-glyphs/30/000000/visible.png' }} style={styles.icon} />
+          <Image
+            source={{
+              uri: "https://img.icons8.com/ios-glyphs/30/000000/visible.png",
+            }}
+            style={styles.icon}
+          />
         </TouchableOpacity>
       </View>
 
@@ -49,11 +70,18 @@ const RegisterScreen: React.FC = () => {
 
       {/* Botón de registrarse */}
       <TouchableOpacity
-        style={[styles.registerButton, isEmailValid && styles.registerButtonActive]}
+        style={[
+          styles.registerButton,
+          isEmailValid && styles.registerButtonActive,
+        ]}
         onPress={handleRegister}
         disabled={isLoading || !isEmailValid} // Botón deshabilitado si el correo no es válido
       >
-        {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>REGISTRARSE</Text>}
+        {isLoading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>REGISTRARSE</Text>
+        )}
       </TouchableOpacity>
 
       {/* Texto para iniciar sesión */}
@@ -72,33 +100,33 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FAFAFA',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FAFAFA",
   },
   title: {
     fontSize: 32,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 30,
-    color: '#2D2D2D',
+    color: "#2D2D2D",
   },
   input: {
-    width: '100%',
+    width: "100%",
     padding: 15,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E6E6E6',
+    borderColor: "#E6E6E6",
     marginBottom: 15,
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#171717',
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#171717",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
   passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
     marginBottom: 15,
   },
   inputPassword: {
@@ -106,60 +134,60 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E6E6E6',
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#171717',
+    borderColor: "#E6E6E6",
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#171717",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
   showPassword: {
-    position: 'absolute',
+    position: "absolute",
     right: 15,
   },
   icon: {
     width: 24,
     height: 24,
-    tintColor: '#9E9E9E',
+    tintColor: "#9E9E9E",
   },
   errorText: {
     fontSize: 14,
-    color: 'red',
+    color: "red",
     marginBottom: 10,
   },
   registerButton: {
-    width: '100%',
+    width: "100%",
     padding: 15,
     borderRadius: 12,
-    backgroundColor: '#A8E6CF', // Color del botón deshabilitado
-    alignItems: 'center',
+    backgroundColor: "#A8E6CF", // Color del botón deshabilitado
+    alignItems: "center",
     marginVertical: 20,
-    shadowColor: '#171717',
+    shadowColor: "#171717",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
     shadowRadius: 6,
   },
   registerButtonActive: {
-    backgroundColor: '#4CAF50', // Color del botón activo (verde oscuro)
+    backgroundColor: "#4CAF50", // Color del botón activo (verde oscuro)
   },
   buttonText: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+    fontWeight: "bold",
+    color: "#FFFFFF",
   },
   loginTextContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 10,
   },
   loginText: {
     fontSize: 14,
-    color: '#7D7D7D',
+    color: "#7D7D7D",
   },
   loginLink: {
     fontSize: 14,
-    color: '#52734D',
-    fontWeight: 'bold',
-    textDecorationLine: 'underline',
+    color: "#52734D",
+    fontWeight: "bold",
+    textDecorationLine: "underline",
   },
 });
 
