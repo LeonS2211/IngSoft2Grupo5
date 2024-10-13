@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import UsuariosApi from '../api/usuario'; // Asegúrate de que el path sea correcto
+import { useState } from "react";
+import UsuariosApi from "../api/usuario"; // Asegúrate de que el path sea correcto
 
 const useLoginViewModel = () => {
-  const [email, setEmail] = useState<string>('');        // Estado para el correo
-  const [password, setPassword] = useState<string>('');  // Estado para la contraseña
-  const [isLoading, setIsLoading] = useState<boolean>(false);  // Estado para saber si está cargando
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);  // Mensaje de error
+  const [email, setEmail] = useState<string>(""); // Estado para el correo
+  const [password, setPassword] = useState<string>(""); // Estado para la contraseña
+  const [isLoading, setIsLoading] = useState<boolean>(false); // Estado para saber si está cargando
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); // Mensaje de error
 
   // Expresión regular para validar el correo
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -18,7 +18,7 @@ const useLoginViewModel = () => {
     try {
       // Validar si el correo tiene un formato correcto
       if (!emailRegex.test(email)) {
-        setErrorMessage('Por favor, introduce un correo electrónico válido.');
+        setErrorMessage("Por favor, introduce un correo electrónico válido.");
         return false;
       }
 
@@ -36,16 +36,16 @@ const useLoginViewModel = () => {
           return true;
         } else {
           // Credenciales incorrectas
-          setErrorMessage('Correo o contraseña incorrectos');
+          setErrorMessage("Correo o contraseña incorrectos");
           return false;
         }
       } else {
-        setErrorMessage('Error al obtener la lista de usuarios');
+        setErrorMessage("Error al obtener la lista de usuarios");
         return false;
       }
     } catch (error) {
       console.error(error);
-      setErrorMessage('Error al iniciar sesión. Intenta nuevamente.');
+      setErrorMessage("Error al iniciar sesión. Intenta nuevamente.");
       return false;
     } finally {
       setIsLoading(false); // Finalizar el estado de carga
