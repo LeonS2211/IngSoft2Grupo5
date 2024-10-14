@@ -1,39 +1,39 @@
-import { useState } from "react";
+import { useState } from "react"; // Asegúrate de importar useState correctamente
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import UsuariosApi from "../api/usuario"; // Asegúrate de que el path sea correcto
 
 const useLoginViewModel = () => {
-  const [email, setEmail] = useState<string>(""); // Estado para el correo
-  const [password, setPassword] = useState<string>(""); // Estado para la contraseña
-  const [isLoading, setIsLoading] = useState<boolean>(false); // Estado para saber si está cargando
-  const [errorMessage, setErrorMessage] = useState<string | null>(null); // Mensaje de error
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Expresión regular para validar el correo
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   // Función para manejar el envío del formulario
   const onSubmit = async () => {
-    setIsLoading(true); // Iniciar el estado de carga
-    setErrorMessage(null); // Limpiar mensajes de error previos
+    setIsLoading(true);
+    setErrorMessage(null);
 
     try {
-      // Validar si el correo tiene un formato correcto
       if (!emailRegex.test(email)) {
         setErrorMessage("Por favor, introduce un correo electrónico válido.");
         return false;
       }
 
-      // Llamada a la API para obtener todos los usuarios y filtrar por email y password
+      // Llamada a la API para obtener todos los usuarios
       const response = await UsuariosApi.findAll();
 
       if (response?.status === 200) {
-        // Buscar el usuario en la lista
         const usuario = response.data.find(
           (user) => user.email === email && user.contraseña === password
         );
 
         if (usuario) {
-          // Autenticación exitosa
-          return true;
+          // Guardar el userId en AsyncStorage
+          await AsyncStorage.setItem("userId", String(usuario.id));
+          return true; // Inicio de sesión exitoso
         } else {
           // Credenciales incorrectas
           setErrorMessage("Correo o contraseña incorrectos");
@@ -48,7 +48,7 @@ const useLoginViewModel = () => {
       setErrorMessage("Error al iniciar sesión. Intenta nuevamente.");
       return false;
     } finally {
-      setIsLoading(false); // Finalizar el estado de carga
+      setIsLoading(false);
     }
   };
 
