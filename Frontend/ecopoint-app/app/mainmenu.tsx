@@ -1,19 +1,28 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { FontAwesome5 } from '@expo/vector-icons'; // Para los iconos de navegación
+import React from "react";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { FontAwesome5 } from "@expo/vector-icons"; // Para los iconos de navegación
+import { useRouter } from "expo-router"; // Uso de useRouter para la navegación
 
 const HomeScreen: React.FC = () => {
+  const router = useRouter(); // Hook de router para la navegación
+
   return (
     <View style={styles.container}>
       {/* Encabezado */}
       <View style={styles.header}>
         <Text style={styles.welcomeText}>¡Bienvenido!</Text>
-        <View style={styles.profileContainer}>
-          <Image 
-            source={{ uri: 'https://via.placeholder.com/50' }} // Foto del perfil, puedes cambiarlo por una imagen local
-            style={styles.profilePic}
-          />
-        </View>
+
+        {/* Imagen de perfil con navegación a ProfileScreen */}
+        <TouchableOpacity onPress={() => router.push("/profileScreen")}>
+          <View style={styles.profileContainer}>
+            <Image
+              source={{
+                uri: "https://img.icons8.com/ios-filled/50/000000/user-male-circle.png",
+              }} // Imagen predeterminada de usuario
+              style={styles.profilePic}
+            />
+          </View>
+        </TouchableOpacity>
       </View>
 
       {/* Ubicación actual */}
@@ -58,62 +67,63 @@ const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E5F5E5',
+    backgroundColor: "#E5F5E5",
   },
   header: {
     padding: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#A8E6CF',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#A8E6CF",
     borderBottomRightRadius: 25,
     borderBottomLeftRadius: 25,
   },
   welcomeText: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: 'green',
+    fontWeight: "bold",
+    color: "green",
   },
   profileContainer: {
     width: 50,
     height: 50,
     borderRadius: 25,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   profilePic: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
+    borderRadius: 25,
   },
   locationContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 10,
   },
   locationText: {
     fontSize: 16,
-    color: 'green',
+    color: "green",
     marginLeft: 5,
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   navigationBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     paddingVertical: 10,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderTopWidth: 1,
-    borderTopColor: '#e5e5e5',
+    borderTopColor: "#e5e5e5",
   },
   navItem: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   navText: {
     fontSize: 12,
     marginTop: 4,
-    color: 'gray',
+    color: "gray",
   },
 });
 

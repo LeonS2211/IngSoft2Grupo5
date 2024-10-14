@@ -1,5 +1,6 @@
-import { IAutenticator } from './IAutenticator';
-import { IPerfil } from './IPerfil';
+// usuarioModel.ts
+import { IAutenticator } from "./IAutenticator";
+import { IPerfil } from "./IPerfil";
 
 export class Usuario implements IAutenticator, IPerfil {
   private nombre: string;
@@ -7,118 +8,78 @@ export class Usuario implements IAutenticator, IPerfil {
   private correoElectronico: string;
   private contraseña: string;
   private numTelefono: number;
-  private DNI: number;
   private puntajeUsuario: number;
-  private objetivos: string[];
+  private codigoAmistad: string;
 
   private static instance: Usuario | null = null;
 
-  // Constructor privado para Singleton
   private constructor(
     nombre: string,
     apellido: string,
     correoElectronico: string,
     contraseña: string,
     numTelefono: number,
-    DNI: number,
     puntajeUsuario: number,
-    objetivos: string[]
+    codigoAmistad: string
   ) {
     this.nombre = nombre;
     this.apellido = apellido;
     this.correoElectronico = correoElectronico;
     this.contraseña = contraseña;
     this.numTelefono = numTelefono;
-    this.DNI = DNI;
     this.puntajeUsuario = puntajeUsuario;
-    this.objetivos = objetivos;
+    this.codigoAmistad = codigoAmistad;
   }
 
-  // Método estático para crear una cuenta (Singleton)
   public static crearCuenta(
-    nombre: string,
-    apellido: string,
+    nombre: string = "",
+    apellido: string = "",
     correoElectronico: string,
     contraseña: string,
-    numTelefono: number,
-    DNI: number,
-    puntajeUsuario: number,
-    objetivos: string[]
+    numTelefono: number = 0,
+    puntajeUsuario: number = 0
   ): Usuario {
     if (!Usuario.instance) {
+      const codigoAmistad = Usuario.generarCodigoAmistad();
       Usuario.instance = new Usuario(
         nombre,
         apellido,
         correoElectronico,
         contraseña,
         numTelefono,
-        DNI,
         puntajeUsuario,
-        objetivos
+        codigoAmistad
       );
     }
     return Usuario.instance;
   }
 
-  // Implementación de IAutenticator
-  public inicioSesion(correo: string, contraseña: string): string {
-    if (this.correoElectronico === correo && this.contraseña === contraseña) {
-      return `Inicio de sesión exitoso para: ${this.nombre}`;
-    } else {
-      return 'Credenciales incorrectas.';
-    }
+  private static generarCodigoAmistad(): string {
+    return Math.random().toString(36).substring(2, 12);
   }
 
-  public cerrarSesion(): void {
-    Usuario.instance = null;
-    console.log('Sesión cerrada exitosamente.');
-  }
-
-  // Implementación de IPerfil
-  public setPerfil(nombre: string, correoElectronico: string, numTelefono: number): void {
-    this.nombre = nombre;
-    this.correoElectronico = correoElectronico;
-    this.numTelefono = numTelefono;
-  }
-
-  public mostrarDetalles(): string {
-    return `Usuario: ${this.nombre} ${this.apellido} | Correo: ${this.correoElectronico} | Puntaje: ${this.puntajeUsuario}`;
-  }
-
-  // Métodos Getters y Setters
-  public getCorreoElectronico(): string {
-    return this.correoElectronico;
-  }
-
-  public getNombre(): string {
-    return this.nombre;
-  }
-
-  public getApellido(): string {
-    return this.apellido;
-  }
-
-  public getContraseña(): string {
-    return this.contraseña;
-  }
-
-  public getDNI(): number {
-    return this.DNI;
-  }
-
-  public getNumTelefono(): number {
-    return this.numTelefono;
+  public getCodigoAmistad(): string {
+    return this.codigoAmistad;
   }
 
   public getPuntajeUsuario(): number {
     return this.puntajeUsuario;
   }
 
-  public setObjetivos(objetivos: string[]): void {
-    this.objetivos = objetivos;
-  }
+  public static reclamarRecompensa(
+    puntajeUsuario: number,
+    puntosCapturadosUserAmigo: number
+  ): {
+    puntosCapturadosUser: number;
+    puntosCapturadosUserAmigo: number;
+  } {
+    // Actualiza el puntaje del usuario logueado
+    puntajeUsuario += 20; // El usuario logueado recibe 20 puntos
+    puntosCapturadosUserAmigo += 15; // El amigo recibe 15 puntos
 
-  public setPuntaje(puntaje: number): void {
-    this.puntajeUsuario = puntaje;
+    return {
+      puntosCapturadosUser: puntajeUsuario,
+      puntosCapturadosUserAmigo,
+    };
   }
 }
