@@ -29,7 +29,7 @@ const useRegisterViewModel = () => {
         email,
         password,
         0, // numTelefono como 0 o el valor que corresponda
-        0, // puntajeUsuario inicial
+        0 // puntajeUsuario inicial
       );
 
       // Obtener los puntos y el código de amistad desde la instancia del usuario
@@ -51,7 +51,7 @@ const useRegisterViewModel = () => {
         alert("Registro exitoso");
       } else {
         setErrorMessage(
-          response?.data?.message || "Hubo un error al registrar el usuario.",
+          response?.data?.message || "Hubo un error al registrar el usuario."
         );
       }
     } catch (error: any) {
@@ -61,7 +61,7 @@ const useRegisterViewModel = () => {
       if (error.response) {
         console.error("Error de respuesta del servidor:", error.response.data);
         setErrorMessage(
-          error.response.data?.message || "Error en el servidor.",
+          error.response.data?.message || "Error en el servidor."
         );
       } else if (error.request) {
         console.error("No se recibió respuesta del servidor:", error.request);
