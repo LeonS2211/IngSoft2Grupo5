@@ -16,6 +16,7 @@ import { SpinnerLoader } from "../components/SpinerLoader";
 // Obtener las dimensiones de la pantalla
 const { width } = Dimensions.get("window");
 
+
 const RegisterScreen: React.FC = () => {
   const {
     email,
@@ -169,6 +170,9 @@ const styles = StyleSheet.create({
     fontSize: 0.08 * width,
     fontWeight: "bold",
     marginBottom: 0.05 * width,
+    fontSize: 32,
+    fontWeight: "bold",
+    marginBottom: 30,
     color: "#2D2D2D",
   },
   input: {

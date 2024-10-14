@@ -1,15 +1,46 @@
-import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons"; // Para los iconos de navegación
+import React, { useEffect, useState } from "react";
 import { useRouter } from "expo-router"; // Uso de useRouter para la navegación
+import { View, Text, StyleSheet, Image, TouchableOpacity  } from "react-native";
+import { FontAwesome5 } from "@expo/vector-icons"; // Para los iconos de navegación
+import MapView, { Callout, Marker } from "react-native-maps";
+import BotBar from "../components/BotBar";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as Location from "expo-location";
+import useMapViewModel from "../ViewModel/MapViewModel";
+import { Link } from "expo-router";
 
 const HomeScreen: React.FC = () => {
   const router = useRouter(); // Hook de router para la navegación
+  const { puntos, isLoading, errorMessage } = useMapViewModel();
+  const [origin, setOrigin] = useState({
+    latitude: -12.08511625487562,
+    longitude: -76.97726574392497,
+  });
+  async function getLocationPermission() {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      alert("Permission denied");
+      return;
+    }
 
+    let location = await Location.getCurrentPositionAsync({});
+    const current = {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    };
+    setOrigin(current);
+  }
+
+  const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    getLocationPermission();
+  }, []);
   return (
     <View style={styles.container}>
-      {/* Encabezado */}
-      <View style={styles.header}>
+      <View style={{ paddingBottom: insets.bottom }}>
+        {/* Encabezado */}
+        <View style={styles.header}>
         <Text style={styles.welcomeText}>¡Bienvenido!</Text>
 
         {/* Imagen de perfil con navegación a ProfileScreen */}
@@ -25,39 +56,55 @@ const HomeScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Ubicación actual */}
-      <View style={styles.locationContainer}>
-        <FontAwesome5 name="map-marker-alt" size={18} color="green" />
-        <Text style={styles.locationText}>Ubicación actual</Text>
-      </View>
+        {/* Ubicación actual */}
+        <View style={styles.locationContainer}>
+          <FontAwesome5 name="map-marker-alt" size={18} color="green" />
+          <Text style={styles.locationText}>Ubicación actual</Text>
+        </View>
 
-      {/* Espacio vacío donde podrías poner el mapa u otra información */}
-      <View style={styles.content}>
-        <Text>Contenido principal</Text>
-      </View>
+        {/* Espacio vacío donde podrías poner el mapa u otra información */}
+        <View>
+          {isLoading ? (
+            <Text>Cargando puntos de reciclaje...</Text>
+          ) : errorMessage ? (
+            <Text>Error: {errorMessage}</Text>
+          ) : (
+            <MapView
+              style={styles.map}
+              initialRegion={{
+                latitude: origin.latitude,
+                longitude: origin.longitude,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+              }}
+              showsUserLocation
+              showsMyLocationButton
+            >
+              {puntos.map((punto) => (
+                <Marker
+                  key={punto.nombre}
+                  coordinate={{
+                    latitude: punto.getUbicacionCoords().latitud,
+                    longitude: punto.getUbicacionCoords().longitud,
+                  }}
+                >
+                  <Link asChild href={`/scannerQR/${punto.nombre}`}>
+                    <Callout>
+                      <View style={styles.marker}>
+                        <Text style={styles.markerText}>
+                          Ir a escanear el QR de {punto.nombre}
+                        </Text>
+                      </View>
+                    </Callout>
+                  </Link>
+                </Marker>
+              ))}
+            </MapView>
+          )}
+        </View>
 
-      {/* Barra de navegación inferior */}
-      <View style={styles.navigationBar}>
-        <TouchableOpacity style={styles.navItem}>
-          <FontAwesome5 name="home" size={24} color="green" />
-          <Text style={styles.navText}>Inicio</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <FontAwesome5 name="lightbulb" size={24} color="gray" />
-          <Text style={styles.navText}>Consejos</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <FontAwesome5 name="gift" size={24} color="gray" />
-          <Text style={styles.navText}>Recompensas</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <FontAwesome5 name="users" size={24} color="gray" />
-          <Text style={styles.navText}>Comunidad</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <FontAwesome5 name="map" size={24} color="gray" />
-          <Text style={styles.navText}>Recorrido</Text>
-        </TouchableOpacity>
+        {/* Barra de navegación inferior */}
+        <BotBar />
       </View>
     </View>
   );
@@ -125,6 +172,13 @@ const styles = StyleSheet.create({
     marginTop: 4,
     color: "gray",
   },
+  map: {
+    height: "73%",
+    width: "100%",
+    paddingBottom: 0,
+  },
+  marker: { padding: 10, alignItems: "center" },
+  markerText: { fontSize: 16, textAlign: "center", color: "#000" },
 });
 
 export default HomeScreen;

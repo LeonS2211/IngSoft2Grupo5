@@ -1,4 +1,3 @@
-// usuarioModel.ts
 import { IAutenticator } from "./IAutenticator";
 import { IPerfil } from "./IPerfil";
 
@@ -37,7 +36,7 @@ export class Usuario implements IAutenticator, IPerfil {
     correoElectronico: string,
     contraseña: string,
     numTelefono: number = 0,
-    puntajeUsuario: number = 0
+    puntajeUsuario: number = 0,
   ): Usuario {
     if (!Usuario.instance) {
       const codigoAmistad = Usuario.generarCodigoAmistad();
@@ -48,7 +47,7 @@ export class Usuario implements IAutenticator, IPerfil {
         contraseña,
         numTelefono,
         puntajeUsuario,
-        codigoAmistad
+        codigoAmistad,
       );
     }
     return Usuario.instance;

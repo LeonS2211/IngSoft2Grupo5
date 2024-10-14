@@ -35,6 +35,7 @@ const useLoginViewModel = () => {
           await AsyncStorage.setItem("userId", String(usuario.id));
           return true; // Inicio de sesión exitoso
         } else {
+          // Credenciales incorrectas
           setErrorMessage("Correo o contraseña incorrectos");
           return false;
         }

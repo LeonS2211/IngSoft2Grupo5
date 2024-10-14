@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, Image } from "react-native";
 import { Link } from "expo-router";
+import React from "react";
 const trash = require("../assets/trash.png");
 
 export function Main() {
@@ -29,10 +30,10 @@ const styles = StyleSheet.create({
     paddingTop: 5,
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: 200,
+    height: 200,
     marginBottom: 45,
-    resizeMode: "contain", // Mantiene la relación de aspecto de la imagen
+    resizeMode: "contain",
   },
   title: {
     fontSize: 30,
