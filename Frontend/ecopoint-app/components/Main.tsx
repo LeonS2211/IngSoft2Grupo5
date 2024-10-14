@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View, Image } from "react-native";
 import { Link } from "expo-router";
 import React from "react";
-
 const trash = require("../assets/trash.png");
 
 export function Main() {
@@ -11,8 +10,7 @@ export function Main() {
 
       <Text style={styles.title}>ECOPOINT</Text>
 
-      {/* Botones de acción con Link para la navegación */}
-      <Link href="/mainmenu" style={styles.buttonPrimary}>
+      <Link href="/login" style={styles.buttonPrimary}>
         <Text style={styles.buttonTextPrimary}>Ya tengo una cuenta</Text>
       </Link>
 
@@ -29,6 +27,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#FFFFFF",
+    paddingTop: 5,
   },
   logo: {
     width: 200,
@@ -45,29 +44,31 @@ const styles = StyleSheet.create({
   buttonPrimary: {
     width: "80%",
     padding: 15,
-    borderRadius: 5,
+    borderRadius: 15, // Bordes más redondeados
     backgroundColor: "#DFF2C6",
+    justifyContent: "center",
     alignItems: "center",
     marginVertical: 10,
     marginBottom: 25,
   },
   buttonTextPrimary: {
-    fontSize: 16,
     color: "#333333",
-    textAlign: "center",
     fontWeight: "bold",
+    textAlign: "center", // Asegura que el texto esté centrado
   },
   buttonSecondary: {
     width: "80%",
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 15, // Bordes más redondeados
     backgroundColor: "#52734D",
+    justifyContent: "center",
     alignItems: "center",
     marginVertical: 10,
   },
   buttonTextSecondary: {
-    fontSize: 16,
     color: "#FFFFFF",
-    textAlign: "center",
+    textAlign: "center", // Asegura que el texto esté centrado
   },
 });
+
+export default Main;

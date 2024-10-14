@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { useRouter } from "expo-router"; // Uso de useRouter para la navegación
+import { View, Text, StyleSheet, Image, TouchableOpacity  } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons"; // Para los iconos de navegación
 import MapView, { Callout, Marker } from "react-native-maps";
 import BotBar from "../components/BotBar";
@@ -9,6 +10,7 @@ import useMapViewModel from "../ViewModel/MapViewModel";
 import { Link } from "expo-router";
 
 const HomeScreen: React.FC = () => {
+  const router = useRouter(); // Hook de router para la navegación
   const { puntos, isLoading, errorMessage } = useMapViewModel();
   const [origin, setOrigin] = useState({
     latitude: -12.08511625487562,
@@ -39,14 +41,20 @@ const HomeScreen: React.FC = () => {
       <View style={{ paddingBottom: insets.bottom }}>
         {/* Encabezado */}
         <View style={styles.header}>
-          <Text style={styles.welcomeText}>¡Bienvenido!</Text>
+        <Text style={styles.welcomeText}>¡Bienvenido!</Text>
+
+        {/* Imagen de perfil con navegación a ProfileScreen */}
+        <TouchableOpacity onPress={() => router.push("/profileScreen")}>
           <View style={styles.profileContainer}>
             <Image
-              source={{ uri: "https://via.placeholder.com/50" }} // Foto del perfil, puedes cambiarlo por una imagen local
+              source={{
+                uri: "https://img.icons8.com/ios-filled/50/000000/user-male-circle.png",
+              }} // Imagen predeterminada de usuario
               style={styles.profilePic}
             />
           </View>
-        </View>
+        </TouchableOpacity>
+      </View>
 
         {/* Ubicación actual */}
         <View style={styles.locationContainer}>
@@ -131,6 +139,7 @@ const styles = StyleSheet.create({
   profilePic: {
     width: "100%",
     height: "100%",
+    borderRadius: 25,
   },
   locationContainer: {
     flexDirection: "row",
@@ -146,6 +155,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  navigationBar: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    paddingVertical: 10,
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderTopColor: "#e5e5e5",
+  },
+  navItem: {
+    alignItems: "center",
+  },
+  navText: {
+    fontSize: 12,
+    marginTop: 4,
+    color: "gray",
   },
   map: {
     height: "73%",
