@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { useRouter } from "expo-router"; // Uso de useRouter para la navegación
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons"; // Para los iconos de navegación
 import MapView, { Callout, Marker } from "react-native-maps";
 import BotBar from "../components/BotBar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Location from "expo-location";
-import markers from "../Models/ubicacionModel";
+import useMapViewModel from "../ViewModel/MapViewModel";
 import { Link } from "expo-router";
 
 const HomeScreen: React.FC = () => {
+  const router = useRouter(); // Hook de router para la navegación
+  const { puntos, isLoading, errorMessage } = useMapViewModel();
   const [origin, setOrigin] = useState({
     latitude: -12.08511625487562,
     longitude: -76.97726574392497,
@@ -39,12 +42,18 @@ const HomeScreen: React.FC = () => {
         {/* Encabezado */}
         <View style={styles.header}>
           <Text style={styles.welcomeText}>¡Bienvenido!</Text>
-          <View style={styles.profileContainer}>
-            <Image
-              source={{ uri: "https://via.placeholder.com/50" }} // Foto del perfil, puedes cambiarlo por una imagen local
-              style={styles.profilePic}
-            />
-          </View>
+
+          {/* Imagen de perfil con navegación a ProfileScreen */}
+          <TouchableOpacity onPress={() => router.push("/profileScreen")}>
+            <View style={styles.profileContainer}>
+              <Image
+                source={{
+                  uri: "https://img.icons8.com/ios-filled/50/000000/user-male-circle.png",
+                }} // Imagen predeterminada de usuario
+                style={styles.profilePic}
+              />
+            </View>
+          </TouchableOpacity>
         </View>
 
         {/* Ubicación actual */}
@@ -55,31 +64,43 @@ const HomeScreen: React.FC = () => {
 
         {/* Espacio vacío donde podrías poner el mapa u otra información */}
         <View>
-          <MapView
-            style={styles.map}
-            initialRegion={{
-              latitude: origin.latitude,
-              longitude: origin.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            }}
-            showsUserLocation
-            showsMyLocationButton
-          >
-            {markers.map((marker, index) => (
-              <Marker key={index} coordinate={marker}>
-                <Link asChild href={`/scannerQR/${marker.name}`}>
-                  <Callout>
-                    <View style={styles.marker}>
-                      <Text style={styles.markerText}>
-                        Ir a escanear el QR de {marker.name}
-                      </Text>
-                    </View>
-                  </Callout>
-                </Link>
-              </Marker>
-            ))}
-          </MapView>
+          {isLoading ? (
+            <Text>Cargando puntos de reciclaje...</Text>
+          ) : errorMessage ? (
+            <Text>Error: {errorMessage}</Text>
+          ) : (
+            <MapView
+              style={styles.map}
+              initialRegion={{
+                latitude: origin.latitude,
+                longitude: origin.longitude,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+              }}
+              showsUserLocation
+              showsMyLocationButton
+            >
+              {puntos.map((punto) => (
+                <Marker
+                  key={punto.nombre}
+                  coordinate={{
+                    latitude: punto.getUbicacionCoords().latitud,
+                    longitude: punto.getUbicacionCoords().longitud,
+                  }}
+                >
+                  <Link asChild href={`/scannerQR/${punto.nombre}`}>
+                    <Callout>
+                      <View style={styles.marker}>
+                        <Text style={styles.markerText}>
+                          Ir a escanear el QR de {punto.nombre}
+                        </Text>
+                      </View>
+                    </Callout>
+                  </Link>
+                </Marker>
+              ))}
+            </MapView>
+          )}
         </View>
 
         {/* Barra de navegación inferior */}
@@ -118,6 +139,7 @@ const styles = StyleSheet.create({
   profilePic: {
     width: "100%",
     height: "100%",
+    borderRadius: 25,
   },
   locationContainer: {
     flexDirection: "row",
@@ -133,6 +155,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  navigationBar: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    paddingVertical: 10,
+    backgroundColor: "#fff",
+    borderTopWidth: 1,
+    borderTopColor: "#e5e5e5",
+  },
+  navItem: {
+    alignItems: "center",
+  },
+  navText: {
+    fontSize: 12,
+    marginTop: 4,
+    color: "gray",
   },
   map: {
     height: "73%",

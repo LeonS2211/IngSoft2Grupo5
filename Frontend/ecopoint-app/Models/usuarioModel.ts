@@ -1,3 +1,4 @@
+// usuarioModel.ts
 import { IAutenticator } from "./IAutenticator";
 import { IPerfil } from "./IPerfil";
 
@@ -8,11 +9,10 @@ export class Usuario implements IAutenticator, IPerfil {
   private contraseña: string;
   private numTelefono: number;
   private puntajeUsuario: number;
-  private codigoAmistad: string; // Cambié a singular
+  private codigoAmistad: string;
 
   private static instance: Usuario | null = null;
 
-  // Constructor privado para Singleton
   private constructor(
     nombre: string,
     apellido: string,
@@ -20,7 +20,7 @@ export class Usuario implements IAutenticator, IPerfil {
     contraseña: string,
     numTelefono: number,
     puntajeUsuario: number,
-    codigoAmistad: string, // Ahora solo un código
+    codigoAmistad: string,
   ) {
     this.nombre = nombre;
     this.apellido = apellido;
@@ -31,7 +31,6 @@ export class Usuario implements IAutenticator, IPerfil {
     this.codigoAmistad = codigoAmistad;
   }
 
-  // Método estático para crear una cuenta (Singleton)
   public static crearCuenta(
     nombre: string = "",
     apellido: string = "",
@@ -41,8 +40,7 @@ export class Usuario implements IAutenticator, IPerfil {
     puntajeUsuario: number = 0,
   ): Usuario {
     if (!Usuario.instance) {
-      const codigoAmistad = Usuario.generarCodigoAmistad(); // Crear un código único
-
+      const codigoAmistad = Usuario.generarCodigoAmistad();
       Usuario.instance = new Usuario(
         nombre,
         apellido,
@@ -56,66 +54,32 @@ export class Usuario implements IAutenticator, IPerfil {
     return Usuario.instance;
   }
 
-  // Método para generar un código de amistad único
   private static generarCodigoAmistad(): string {
-    return Math.random().toString(36).substring(2, 12); // Genera un código de 10 caracteres
+    return Math.random().toString(36).substring(2, 12);
   }
 
-  // Obtener el código de amistad
   public getCodigoAmistad(): string {
-    return this.codigoAmistad; // Devuelve un único código de amistad
-  }
-
-  public inicioSesion(correo: string, contraseña: string): string {
-    if (this.correoElectronico === correo && this.contraseña === contraseña) {
-      return `Inicio de sesión exitoso para: ${this.nombre}`;
-    } else {
-      return "Credenciales incorrectas.";
-    }
-  }
-
-  public cerrarSesion(): void {
-    Usuario.instance = null;
-    console.log("Sesión cerrada exitosamente.");
-  }
-
-  // Implementación de IPerfil
-  public setPerfil(
-    nombre: string,
-    correoElectronico: string,
-    numTelefono: number,
-  ): void {
-    this.nombre = nombre;
-    this.correoElectronico = correoElectronico;
-    this.numTelefono = numTelefono;
-  }
-
-  public mostrarDetalles(): string {
-    return `Usuario: ${this.nombre} ${this.apellido} | Correo: ${this.correoElectronico} | Puntaje: ${this.puntajeUsuario}`;
-  }
-
-  // Getters y Setters
-  public getCorreoElectronico(): string {
-    return this.correoElectronico;
-  }
-
-  public getNombre(): string {
-    return this.nombre;
-  }
-
-  public getApellido(): string {
-    return this.apellido;
-  }
-
-  public getContraseña(): string {
-    return this.contraseña;
-  }
-
-  public getNumTelefono(): number {
-    return this.numTelefono;
+    return this.codigoAmistad;
   }
 
   public getPuntajeUsuario(): number {
     return this.puntajeUsuario;
+  }
+
+  public static reclamarRecompensa(
+    puntajeUsuario: number,
+    puntosCapturadosUserAmigo: number,
+  ): {
+    puntosCapturadosUser: number;
+    puntosCapturadosUserAmigo: number;
+  } {
+    // Actualiza el puntaje del usuario logueado
+    puntajeUsuario += 20; // El usuario logueado recibe 20 puntos
+    puntosCapturadosUserAmigo += 15; // El amigo recibe 15 puntos
+
+    return {
+      puntosCapturadosUser: puntajeUsuario,
+      puntosCapturadosUserAmigo,
+    };
   }
 }

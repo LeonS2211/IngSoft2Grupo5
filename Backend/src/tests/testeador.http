@@ -1,42 +1,42 @@
-GET http://localhost:3001/usuarioAmigo
+GET http://localhost:3001/codigoQR
 ########
 
-POST http://localhost:3001/usuario
+POST http://localhost:3001/puntoReciclaje
 Content-Type: application/json
 
 {
- "email": "broder2@gmail.com", 
+ "email": "test23463@gmail.com", 
  "contraseña": "1234", 
  "puntos": 0, 
- "codigoAmistad":""
+ "codigoAmistad":"ABCD2143JK"
+}
+###
+POST https://backgrupo5-production.up.railway.app/ubicacion
+Content-Type: application/json
+
+{
+  "latitud": -12.00108253960971, 
+  "longitud": -77.02039977116344
 }
 ###
 POST http://localhost:3001/codigoQR
 Content-Type: application/json
 
 {
- "contenido": "ABCD1234TY"
+  "contenido": "ecopoint1"
 }
 ###
-POST http://localhost:3001/ubicacion
+POST https://backgrupo5-production.up.railway.app/puntoReciclaje
 Content-Type: application/json
 
 {
- "latitud": 68.9056,
- "longitud": 45.67548
+ "idUbicacion": 2,
+ "idCodigoQR": 2,
+ "nombre": "CasaLPruebas", 
+ "descripcion": "cerca del edificio x, contenedor azul"
 }
 ###
-POST http://localhost:3001/puntoReciclaje
-Content-Type: application/json
-
-{
- "idUbicacion": 1,
- "idCodigoQR": 1,
- "nombre": "Universidad de Lima", 
- "descripcion": "cerca del edificio x, contenedor de color gris"
-}
-###
-POST http://localhost:3001/usuarioPuntoReciclaje
+POST https://backgrupo5-production.up.railway.app/usuarioPuntoReciclaje
 Content-Type: application/json
 
 {
@@ -44,7 +44,7 @@ Content-Type: application/json
  "idPuntoReciclaje": 1
 }
 ###
-POST http://localhost:3001/usuarioAmigo
+POST https://backgrupo5-production.up.railway.app/usuarioAmigo
 Content-Type: application/json
 
 {
@@ -53,19 +53,19 @@ Content-Type: application/json
 }
 ###
 
-PUT http://localhost:3001/usuario
+PUT https://backgrupo5-production.up.railway.app/codigoQR
 Content-Type: application/json
 
 {
-  "id": 1,
-  "puntos": 20
+  "id": 2,
+  "contenido":"ecopoint2"
 }
 
 ###
 
-GET http://localhost:3001/puntoReciclaje/1
+GET https://backgrupo5-production.up.railway.app/puntoReciclaje/1
 ###
 
-DELETE http://localhost:3001/usuario/1
+DELETE https://backgrupo5-production.up.railway.app/usuarioPuntoReciclaje/1
 
 ########

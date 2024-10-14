@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -25,6 +25,11 @@ const LoginScreen: React.FC = () => {
     onSubmit,
   } = useLoginViewModel();
 
+  const [showPassword, setShowPassword] = useState(false); // Estado para controlar la visibilidad de la contraseña
+
+  // Expresión regular para validar dominios de correo específicos
+  const emailRegex = /^[^\s@]+@(gmail\.com|hotmail\.com|icloud\.com)$/;
+
   // Función para manejar el inicio de sesión
   const handleLogin = async () => {
     const success = await onSubmit(); // Ejecutar el método para manejar el inicio de sesión
@@ -34,6 +39,9 @@ const LoginScreen: React.FC = () => {
       router.push("/mainmenu"); // Redirige al HomeScreen
     }
   };
+
+  // Verificar si el email es válido según la expresión regular
+  const isEmailValid = emailRegex.test(email);
 
   return (
     <View style={styles.container}>
@@ -56,26 +64,42 @@ const LoginScreen: React.FC = () => {
           placeholder="Contraseña"
           value={password}
           onChangeText={setPassword}
-          secureTextEntry
+          secureTextEntry={!showPassword}
         />
-        <TouchableOpacity style={styles.showPassword}>
+        <TouchableOpacity
+          style={styles.showPassword}
+          onPress={() => setShowPassword(!showPassword)} // Alternar visibilidad
+        >
           <Image
             source={{
-              uri: "https://img.icons8.com/ios-glyphs/30/000000/visible.png",
+              uri: showPassword
+                ? "https://img.icons8.com/ios-glyphs/30/000000/invisible.png" // Icono para ocultar la contraseña
+                : "https://img.icons8.com/ios-glyphs/30/000000/visible.png", // Icono para mostrar la contraseña
             }}
             style={styles.icon}
           />
         </TouchableOpacity>
       </View>
 
+      {/* Enlace para "¿Olvidaste tu contraseña?" */}
+      <TouchableOpacity
+        style={styles.forgotPassword}
+        onPress={() => router.push("/forgot-password")} // Redirige a la pantalla de recuperación de contraseña
+      >
+        <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
+      </TouchableOpacity>
+
       {/* Mostrar mensaje de error si lo hay */}
       {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
 
       {/* Botón de iniciar sesión */}
       <TouchableOpacity
-        style={styles.loginButton}
+        style={[
+          styles.loginButton,
+          (!isEmailValid || password === "") && styles.disabledButton,
+        ]}
         onPress={handleLogin}
-        disabled={isLoading}
+        disabled={isLoading || !isEmailValid || password === ""}
       >
         {isLoading ? (
           <ActivityIndicator color="#fff" />
@@ -90,6 +114,41 @@ const LoginScreen: React.FC = () => {
         <Text style={styles.link}>Condiciones de servicio</Text> y la{" "}
         <Text style={styles.link}>Política de Privacidad</Text>.
       </Text>
+
+      {/* Texto para "Inicia sesión con" */}
+      <View style={styles.socialLoginContainer}>
+        <View style={styles.separator} />
+        <Text style={styles.socialLoginText}>Inicia sesión con</Text>
+        <View style={styles.separator} />
+      </View>
+
+      {/* Íconos para el inicio de sesión con Apple, Google y Facebook */}
+      <View style={styles.socialIconsContainer}>
+        <Link href="https://www.apple.com">
+          <Image
+            source={{
+              uri: "https://img.icons8.com/ios-filled/50/000000/mac-os.png",
+            }}
+            style={styles.socialIcon}
+          />
+        </Link>
+        <Link href="https://accounts.google.com">
+          <Image
+            source={{
+              uri: "https://img.icons8.com/color/50/000000/google-logo.png",
+            }}
+            style={styles.socialIcon}
+          />
+        </Link>
+        <Link href="https://www.facebook.com">
+          <Image
+            source={{
+              uri: "https://img.icons8.com/color/50/000000/facebook-new.png",
+            }}
+            style={styles.socialIcon}
+          />
+        </Link>
+      </View>
 
       {/* Texto para registrarse */}
       <View style={styles.registerTextContainer}>
@@ -134,7 +193,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     width: "100%",
-    marginBottom: 15,
+    marginBottom: 5, // Reduje el margen para dejar espacio al enlace de "¿Olvidaste tu contraseña?"
   },
   inputPassword: {
     flex: 1,
@@ -162,6 +221,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 10,
   },
+  forgotPassword: {
+    alignSelf: "flex-end", // Mantiene el enlace alineado a la derecha
+    marginBottom: 10, // Espacio entre el enlace y el botón de inicio de sesión
+  },
+  forgotPasswordText: {
+    fontSize: 12,
+    color: "#52734D",
+    textDecorationLine: "underline",
+  },
   loginButton: {
     width: "100%",
     padding: 15,
@@ -178,6 +246,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "#FFFFFF",
+  },
+  disabledButton: {
+    backgroundColor: "#A8A8A8", // Cambia el color del botón si está deshabilitado
   },
   termsText: {
     fontSize: 12,
@@ -201,6 +272,32 @@ const styles = StyleSheet.create({
     color: "#52734D",
     fontWeight: "bold",
     textDecorationLine: "underline",
+  },
+  socialLoginContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 20,
+  },
+  separator: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#E6E6E6",
+  },
+  socialLoginText: {
+    fontSize: 16,
+    color: "#7D7D7D",
+    marginHorizontal: 10,
+  },
+  socialIconsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "80%",
+    marginVertical: 15,
+  },
+  socialIcon: {
+    width: 50,
+    height: 50,
+    resizeMode: "contain",
   },
 });
 
