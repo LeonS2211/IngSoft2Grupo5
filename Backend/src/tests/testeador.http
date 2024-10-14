@@ -1,32 +1,32 @@
 GET https://backgrupo5-production.up.railway.app
 ########
 
-POST http://localhost:3001/usuario
+POST https://backgrupo5-production.up.railway.app/usuario
 Content-Type: application/json
 
 {
- "email": "test@gmail.com", 
+ "email": "test23463@gmail.com", 
  "contraseña": "1234", 
  "puntos": 0, 
- "codigoAmistad":""
+ "codigoAmistad":"ABCD2143JK"
 }
 ###
-POST http://localhost:3001/codigoQR
+POST https://backgrupo5-production.up.railway.app/ubicacion
 Content-Type: application/json
 
 {
- "contenido": "ABCD1234TY"
+  "latitud": -12.085393051018592,
+  "longitud": -76.97119693337255
 }
 ###
-POST http://localhost:3001/ubicacion
+POST https://backgrupo5-production.up.railway.app/codigoQR
 Content-Type: application/json
 
 {
- "latitud": 68.9056,
- "longitud": 45.67548
+  "contenido": "ecopoint1"
 }
 ###
-POST http://localhost:3001/puntoReciclaje
+POST https://backgrupo5-production.up.railway.app/puntoReciclaje
 Content-Type: application/json
 
 {
@@ -36,7 +36,7 @@ Content-Type: application/json
  "descripcion": "cerca del edificio x, contenedor de color gris"
 }
 ###
-POST http://localhost:3001/usuarioPuntoReciclaje
+POST https://backgrupo5-production.up.railway.app/usuarioPuntoReciclaje
 Content-Type: application/json
 
 {
@@ -44,7 +44,7 @@ Content-Type: application/json
  "idPuntoReciclaje": 1
 }
 ###
-POST http://localhost:3001/usuarioAmigo
+POST https://backgrupo5-production.up.railway.app/usuarioAmigo
 Content-Type: application/json
 
 {
@@ -53,19 +53,19 @@ Content-Type: application/json
 }
 ###
 
-PUT http://localhost:3001/usuario
+PUT https://backgrupo5-production.up.railway.app/codigoQR
 Content-Type: application/json
 
 {
   "id": 1,
-  "puntos": 20
+  "contenido":"ecopoint1"
 }
 
 ###
 
-GET http://localhost:3001/puntoReciclaje/1
+GET https://backgrupo5-production.up.railway.app/puntoReciclaje/1
 ###
 
-DELETE http://localhost:3001/usuario/1
+DELETE https://backgrupo5-production.up.railway.app/usuarioPuntoReciclaje/1
 
 ########
