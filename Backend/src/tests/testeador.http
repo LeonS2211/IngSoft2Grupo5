@@ -1,14 +1,14 @@
-GET http://localhost:3001/usuarioAmigo
+GET http://localhost:3001/usuario
 ########
 
 POST http://localhost:3001/usuario
 Content-Type: application/json
 
 {
- "email": "broder2@gmail.com", 
+ "email": "broder331@gmail.com", 
  "contraseña": "1234", 
  "puntos": 0, 
- "codigoAmistad":""
+ "codigoAmistad":"prueba2234"
 }
 ###
 POST http://localhost:3001/codigoQR

@@ -1,7 +1,8 @@
+// FriendViewModel.ts
 import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import UsuariosApi from "../api/usuario"; // API para buscar amigos y usuario logueado
-import UsuariosAmigoApi from "../api/usuarioAmigo"; // API para incrementar recompensas
+import { Usuario } from "../Models/usuarioModel"; // Asegúrate de que la ruta sea correcta
 
 const useFriendViewModel = () => {
   const [codigoAmistad, setCodigoAmistad] = useState<string>(""); // Estado para el código de amistad del usuario logueado
@@ -47,7 +48,6 @@ const useFriendViewModel = () => {
         throw new Error("El ID del usuario no es válido.");
       }
 
-      // Llamada a la API para obtener el código de amistad del usuario
       const response = await UsuariosApi.findOne(numericUserId);
       if (response?.status === 200) {
         const usuario = response.data;
@@ -69,16 +69,12 @@ const useFriendViewModel = () => {
     setErrorMessage(null);
 
     try {
-      // Llamada a la API para buscar el usuario por el código de amistad (UsuariosApi)
       const response = await UsuariosApi.findAll();
-
       if (response?.status === 200) {
         const foundUser = response.data.find(
           (user) => user.codigoAmistad === enteredCode
         );
-
         if (foundUser) {
-          // Agregamos el correo del amigo a la lista de amigos y el código a la lista de usados
           const updatedFriends = [...friends, foundUser.email];
           setFriends(updatedFriends);
           setUsedCodes((prevCodes) => [...prevCodes, enteredCode]); // Agregar el código a los usados
@@ -98,21 +94,29 @@ const useFriendViewModel = () => {
     }
   };
 
-  // Función para reclamar la recompensa y actualizar los puntos del usuario logueado y del amigo
   const reclamarRecompensa = async (friendEmail: string) => {
     try {
-      // Verificar si el correo del amigo ya fue utilizado
       if (usedCodes.includes(friendEmail)) {
         setErrorMessage("Ya has reclamado puntos con este amigo.");
         return;
       }
 
-      // Obtener el ID del usuario logueado desde AsyncStorage
       const userId = await getUserId();
       if (!userId) {
         setErrorMessage("No se pudo obtener el ID del usuario logueado.");
         return;
       }
+
+      // Asegúrate de que la cuenta del usuario esté creada
+      // Aquí debes proporcionar datos válidos para crear la cuenta del usuario
+      const usuarioLogueado = Usuario.crearCuenta(
+        "NombreEjemplo", // Sustituir por el nombre real
+        "ApellidoEjemplo", // Sustituir por el apellido real
+        "correo@ejemplo.com", // Sustituir por el correo real
+        "contraseñaSegura", // Sustituir por la contraseña real
+        123456789, // Sustituir por el número real
+        0 // Puntaje inicial
+      );
 
       // Obtener información del usuario logueado
       const responseUsuarioLogueado = await UsuariosApi.findOne(
@@ -121,7 +125,6 @@ const useFriendViewModel = () => {
       if (responseUsuarioLogueado?.status === 200) {
         const usuarioLogueado = responseUsuarioLogueado.data;
 
-        // Obtener información del amigo
         const responseAmigo = await UsuariosApi.findAll();
         const amigo = responseAmigo?.data.find(
           (user) => user.email === friendEmail
@@ -132,23 +135,35 @@ const useFriendViewModel = () => {
           return;
         }
 
-        // Sumar puntos
-        const nuevosPuntosLogueado = (usuarioLogueado.puntos || 0) + 20;
-        const nuevosPuntosAmigo = (amigo.puntos || 0) + 15;
+        const puntosCapturadosUser = usuarioLogueado.puntos || 0;
+        const puntosCapturadosUserAmigo = amigo.puntos || 0;
 
-        console.log(`Nuevos puntos usuario logueado: ${nuevosPuntosLogueado}`);
-        console.log(`Nuevos puntos amigo: ${nuevosPuntosAmigo}`);
+        console.log(
+          `Puntos capturados de usuario logueado: ${puntosCapturadosUser}`
+        );
+        console.log(
+          `Puntos capturados de usuario amigo: ${puntosCapturadosUserAmigo}`
+        );
+
+        // Llama a la función reclamarRecompensa para sumar puntos
+        const {
+          puntosCapturadosUser: nuevosPuntosUser,
+          puntosCapturadosUserAmigo: nuevosPuntosAmigo,
+        } = Usuario.reclamarRecompensa(
+          puntosCapturadosUser,
+          puntosCapturadosUserAmigo
+        );
 
         // Actualizar puntos del usuario logueado
         const updateUsuarioLogueado = await UsuariosApi.update({
           id: usuarioLogueado.id,
-          puntos: nuevosPuntosLogueado,
+          puntos: nuevosPuntosUser, // Sumar 20 puntos al usuario logueado
         });
 
         // Actualizar puntos del amigo
         const updateAmigo = await UsuariosApi.update({
           id: amigo.id,
-          puntos: nuevosPuntosAmigo,
+          puntos: nuevosPuntosAmigo, // Sumar 15 puntos al amigo
         });
 
         // Verificar si ambas actualizaciones fueron exitosas
@@ -157,14 +172,11 @@ const useFriendViewModel = () => {
           updateAmigo?.status === 200
         ) {
           console.log("Puntos actualizados correctamente para ambos.");
-
-          // Guardar el correo del amigo como utilizado y limpiar la bandeja de amigos
           setUsedCodes((prevCodes) => [...prevCodes, friendEmail]);
           setFriends([]); // Limpiar la bandeja
         } else {
-          // Si hay algún error en la actualización de puntos
           setErrorMessage("Error al actualizar los puntos.");
-          return; // No marcar el correo como utilizado si hay errores
+          return;
         }
       } else {
         setErrorMessage("Usuario logueado no encontrado.");
@@ -183,6 +195,7 @@ const useFriendViewModel = () => {
     fetchCodigoAmistad,
     checkFriendCode,
     reclamarRecompensa, // Agregamos reclamarRecompensa al objeto de retorno
+    // Agregamos reclamarRecompensa al objeto de retorno
   };
 };
 
