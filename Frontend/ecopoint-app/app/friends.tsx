@@ -7,12 +7,10 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
-  Dimensions,
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import useFriendViewModel from "../ViewModel/FriendViewModel"; // Importar el FriendViewModel
 
-const { width } = Dimensions.get("window");
 const FriendsScreen: React.FC = () => {
   const [enteredCode, setEnteredCode] = useState<string>(""); // Estado para el código ingresado
   const [isClaimingPoints, setIsClaimingPoints] = useState<boolean>(false); // Nuevo estado para indicar cuando se están reclamando puntos
