@@ -17,9 +17,8 @@ export default function ScannerSuccess() {
 
       {/* Información de validación */}
       <View style={styles.infoContainer}>
-        <Text style={styles.infoText}>Cantidad: N</Text>
         <Text style={styles.infoText}>Fecha: 10/10/2023 11:16</Text>
-        <Text style={styles.infoText}>Puntaje: N</Text>
+        <Text style={styles.infoText}>Puntaje obtenido: ${puntosActuales} + 20</Text>
         <Text style={styles.infoText}>Estado: Validado</Text>
       </View>
 

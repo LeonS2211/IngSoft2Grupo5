@@ -96,7 +96,7 @@ const FriendsScreen: React.FC = () => {
       {isLoading ? (
         <ActivityIndicator size="large" color="green" />
       ) : errorMessage ? (
-        <Text style={styles.errorText}>{errorMessage}</Text>
+        <Text style={styles.label}>{errorMessage}</Text>
       ) : (
         <View style={styles.friendCodeContainer}>
           <Text style={styles.friendCode}>Mi código de amistad:</Text>

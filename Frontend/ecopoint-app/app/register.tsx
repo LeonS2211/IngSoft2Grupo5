@@ -11,11 +11,9 @@ import {
 } from "react-native";
 import { Link, useRouter } from "expo-router"; // Para redirigir
 import useRegisterViewModel from "../ViewModel/RegisterViewModel";
-import { SpinnerLoader } from "../components/SpinerLoader";
 
 // Obtener las dimensiones de la pantalla
 const { width } = Dimensions.get("window");
-
 
 const RegisterScreen: React.FC = () => {
   const {
@@ -141,7 +139,9 @@ const RegisterScreen: React.FC = () => {
         disabled={isLoading || !isFormValid}
       >
         {isLoading ? (
-          <SpinnerLoader />
+          <View>
+            <Text> cargando... </Text>
+          </View>
         ) : (
           <Text style={styles.buttonText}>REGISTRARSE</Text>
         )}
@@ -170,9 +170,6 @@ const styles = StyleSheet.create({
     fontSize: 0.08 * width,
     fontWeight: "bold",
     marginBottom: 0.05 * width,
-    fontSize: 32,
-    fontWeight: "bold",
-    marginBottom: 30,
     color: "#2D2D2D",
   },
   input: {

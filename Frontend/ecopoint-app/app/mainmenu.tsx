@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "expo-router"; // Uso de useRouter para la navegación
-import { View, Text, StyleSheet, Image, TouchableOpacity  } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons"; // Para los iconos de navegación
 import MapView, { Callout, Marker } from "react-native-maps";
 import BotBar from "../components/BotBar";
@@ -41,20 +41,20 @@ const HomeScreen: React.FC = () => {
       <View style={{ paddingBottom: insets.bottom }}>
         {/* Encabezado */}
         <View style={styles.header}>
-        <Text style={styles.welcomeText}>¡Bienvenido!</Text>
+          <Text style={styles.welcomeText}>¡Bienvenido!</Text>
 
-        {/* Imagen de perfil con navegación a ProfileScreen */}
-        <TouchableOpacity onPress={() => router.push("/profileScreen")}>
-          <View style={styles.profileContainer}>
-            <Image
-              source={{
-                uri: "https://img.icons8.com/ios-filled/50/000000/user-male-circle.png",
-              }} // Imagen predeterminada de usuario
-              style={styles.profilePic}
-            />
-          </View>
-        </TouchableOpacity>
-      </View>
+          {/* Imagen de perfil con navegación a ProfileScreen */}
+          <TouchableOpacity onPress={() => router.push("/profileScreen")}>
+            <View style={styles.profileContainer}>
+              <Image
+                source={{
+                  uri: "https://img.icons8.com/ios-filled/50/000000/user-male-circle.png",
+                }} // Imagen predeterminada de usuario
+                style={styles.profilePic}
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
 
         {/* Ubicación actual */}
         <View style={styles.locationContainer}>

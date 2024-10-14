@@ -56,7 +56,7 @@ const ProfileScreen: React.FC = () => {
         {isLoading ? (
           <ActivityIndicator size="large" color="#4CAF50" />
         ) : errorMessage ? (
-          <Text style={styles.errorText}>{errorMessage}</Text>
+          <Text style={styles.statLabel}>{errorMessage}</Text>
         ) : (
           <Text style={styles.name}>{email || "Cargando..."}</Text>
         )}
@@ -65,7 +65,10 @@ const ProfileScreen: React.FC = () => {
 
       {/* Botones de agregar amigos y mis amigos */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => router.push("/friends")}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => router.push("/friends")}
+        >
           <Text style={styles.buttonText}>AGREGAR AMIGOS</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button}>
