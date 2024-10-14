@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import UsuariosApi from "../api/usuario"; // API para buscar amigos y usuario logueado
-import { Usuario } from "../Models/usuarioModel"; // Asegúrate de que la ruta sea correcta
+import { Usuario } from "../Models/usuarioModel";
 
 const useFriendViewModel = () => {
   const [codigoAmistad, setCodigoAmistad] = useState<string>(""); // Estado para el código de amistad del usuario logueado
@@ -12,7 +12,7 @@ const useFriendViewModel = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // Estado para el mensaje de error
 
   useEffect(() => {
-    fetchCodigoAmistad(); // Llamamos a fetchCodigoAmistad al cargar la vista
+    fetchCodigoAmistad();
   }, []);
 
   // Función para obtener el userId almacenado en AsyncStorage
@@ -21,7 +21,7 @@ const useFriendViewModel = () => {
       const userId = await AsyncStorage.getItem("userId");
       if (!userId) {
         throw new Error(
-          "No se pudo encontrar el ID del usuario en AsyncStorage."
+          "No se pudo encontrar el ID del usuario en AsyncStorage.",
         );
       }
       return userId;
@@ -80,7 +80,7 @@ const useFriendViewModel = () => {
           setUsedCodes((prevCodes) => [...prevCodes, enteredCode]); // Agregar el código a los usados
         } else {
           setErrorMessage(
-            "No se encontró ningún usuario con ese código de amistad."
+            "No se encontró ningún usuario con ese código de amistad.",
           );
         }
       } else {
@@ -115,12 +115,12 @@ const useFriendViewModel = () => {
         "correo@ejemplo.com", // Sustituir por el correo real
         "contraseñaSegura", // Sustituir por la contraseña real
         123456789, // Sustituir por el número real
-        0 // Puntaje inicial
+        0, // Puntaje inicial
       );
 
       // Obtener información del usuario logueado
       const responseUsuarioLogueado = await UsuariosApi.findOne(
-        parseInt(userId, 10)
+        parseInt(userId, 10),
       );
       if (responseUsuarioLogueado?.status === 200) {
         const usuarioLogueado = responseUsuarioLogueado.data;
@@ -139,10 +139,10 @@ const useFriendViewModel = () => {
         const puntosCapturadosUserAmigo = amigo.puntos || 0;
 
         console.log(
-          `Puntos capturados de usuario logueado: ${puntosCapturadosUser}`
+          `Puntos capturados de usuario logueado: ${puntosCapturadosUser}`,
         );
         console.log(
-          `Puntos capturados de usuario amigo: ${puntosCapturadosUserAmigo}`
+          `Puntos capturados de usuario amigo: ${puntosCapturadosUserAmigo}`,
         );
 
         // Llama a la función reclamarRecompensa para sumar puntos
@@ -151,7 +151,7 @@ const useFriendViewModel = () => {
           puntosCapturadosUserAmigo: nuevosPuntosAmigo,
         } = Usuario.reclamarRecompensa(
           puntosCapturadosUser,
-          puntosCapturadosUserAmigo
+          puntosCapturadosUserAmigo,
         );
 
         // Actualizar puntos del usuario logueado

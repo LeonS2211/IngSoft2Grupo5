@@ -1,33 +1,55 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Link } from "expo-router";
+import useGetPuntosViewModel from "../../ViewModel/GetPuntosViewModel";
 
 export default function ScannerSuccess() {
+  const {
+    userPuntaje,
+    sumarPuntosUsuario,
+    fetchUserPuntaje,
+    isLoading,
+    errorMessage,
+    Fecha,
+  } = useGetPuntosViewModel();
+
+  useEffect(() => {
+    fetchUserPuntaje();
+    sumarPuntosUsuario(1000); // Obtener el puntaje del usuario al cargar la vista
+  }, []);
+
   return (
     <View style={styles.container}>
-      {/* Mensaje de éxito */}
-      <Text style={styles.title}>¡Escaneo realizado correctamente!</Text>
+      {isLoading ? (
+        <>
+          <Text style={styles.title}>Puntaje del usuario</Text>
+          <Text>Cargando...</Text>
+        </>
+      ) : errorMessage ? (
+        <Text style={styles.errorText}>{errorMessage}</Text>
+      ) : (
+        <>
+          <Text style={styles.title}>¡Escaneo realizado correctamente!</Text>
 
-      {/* Sección de validación */}
-      <View style={styles.validationContainer}>
-        <FontAwesome5 name="thumbs-up" size={50} color="green" />
-        <Text style={styles.validationText}>¡Puntaje validado!</Text>
-      </View>
+          <View style={styles.validationContainer}>
+            <FontAwesome5 name="thumbs-up" size={50} color="green" />
+            <Text style={styles.validationText}>¡Puntaje validado!</Text>
+          </View>
 
-      {/* Información de validación */}
-      <View style={styles.infoContainer}>
-        <Text style={styles.infoText}>Fecha: 10/10/2023 11:16</Text>
-        <Text style={styles.infoText}>Puntaje obtenido: ${puntosActuales} + 20</Text>
-        <Text style={styles.infoText}>Estado: Validado</Text>
-      </View>
+          <View style={styles.infoContainer}>
+            <Text style={styles.infoText}>Fecha: {Fecha}</Text>
+            <Text style={styles.infoText}>Puntaje obtenido: 1000+</Text>
+            <Text style={styles.infoText}>Puntaje actual:{userPuntaje}</Text>
+          </View>
 
-      {/* Botón de aceptar */}
-      <Link push href={"/mainmenu"} asChild>
-        <Pressable style={styles.button}>
-          <Text style={styles.buttonText}>Aceptar</Text>
-        </Pressable>
-      </Link>
+          <Link push href={"/mainmenu"} asChild>
+            <Pressable style={styles.button}>
+              <Text style={styles.buttonText}>Aceptar</Text>
+            </Pressable>
+          </Link>
+        </>
+      )}
     </View>
   );
 }
@@ -82,5 +104,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#3D550C", // Verde oscuro
     textAlign: "center",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 20,
   },
 });

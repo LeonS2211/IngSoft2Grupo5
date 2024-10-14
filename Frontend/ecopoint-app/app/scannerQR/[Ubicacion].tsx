@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,49 +10,58 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 import BotBar from "../../components/BotBar";
 import { CameraView, useCameraPermissions } from "expo-camera";
-import codes from "../../Models/codigoQRModel";
+import useGetCodesViewModel from "../../ViewModel/GetCodesViewModel";
+
 export default function ScannerQR() {
   const { Ubicacion } = useLocalSearchParams();
+  const {
+    isLoading,
+    errorMessage,
+    fetchCodes,
+    validateQRCode,
+    fetchUserLocation,
+  } = useGetCodesViewModel();
   const [permission, requestPermission] = useCameraPermissions();
-  const [isLoading, setIsLoading] = useState(false);
-  const [codigos, setCodigos] = useState<QRCode[]>([]);
   const [scanned, setScanned] = useState(false);
   const isPermissionGranted = Boolean(permission?.granted);
-  type QRCode = {
-    contenido: string;
-  };
-  const validateQRCode = async (data: string): Promise<void> => {
-    setIsLoading(true);
-    setCodigos(codes);
-    setTimeout(() => {
-      setIsLoading(false);
-      if (codigos.some((codigitos) => codigitos.contenido === data)) {
-        console.log(data);
-        console.log(codigos);
-        setScanned(false);
-        router.push("scannerQR/scannerSuccess");
-      } else {
-        console.log(data);
-        console.log(codigos);
-        Alert.alert("Error", "El código QR no coincide con ningún registro.");
-        setScanned(false);
-      }
-    }, 3000);
-  };
-  const handleBarCodeScanned = ({ data }: { data: string }): void => {
-    console.log(data);
+
+  useEffect(() => {
+    fetchCodes(); // Obtener los códigos QR al cargar la vista
+    fetchUserLocation(); // Obtener la ubicación del usuario al cargar la vista
+  }, []);
+
+  const handleBarCodeScanned = async ({
+    data,
+  }: {
+    data: string;
+  }): Promise<void> => {
     setScanned(true); // Evitar escaneos repetidos
-    validateQRCode(data); // Validar el código QR
+
+    const isValid = await validateQRCode(data); // Validar el código QR y la ubicación del usuario
+
+    if (isValid) {
+      router.push("scannerQR/scannerSuccess");
+    } else {
+      Alert.alert(
+        "Error",
+        "El código QR no coincide o no estás cerca del punto de reciclaje.",
+      );
+    }
+
+    // Usar un tiempo de cooldown para evitar múltiples escaneos consecutivos
+    setTimeout(() => {
+      setScanned(false); // Reactivar el escaneo después de 3 segundos
+    }, 2000); // Ajusta el tiempo según tus necesidades
   };
+
   return (
     <View style={styles.container}>
       {/* Título */}
-      <Text style={styles.title}>Escanea el codigo QR con tu cámara</Text>
+      <Text style={styles.title}>Escanea el código QR con tu cámara</Text>
       <View>
         <Text style={styles.subtitle}> {Ubicacion}</Text>
       </View>
 
-      {/* Marco del QR (simulación con Image por ahora) */}
       {!isPermissionGranted ? (
         <View style={styles.qrContainer}>
           <Pressable onPress={requestPermission}>
@@ -65,20 +74,18 @@ export default function ScannerQR() {
             <CameraView
               style={styles.camera}
               facing="back"
-              onBarcodeScanned={({ data }) => {
-                handleBarCodeScanned({ data });
-              }}
-            ></CameraView>
+              onBarcodeScanned={({ data }) => handleBarCodeScanned({ data })}
+            />
           ) : (
             <Text>Escaneando...</Text>
           )}
-          {/* Mostrar un spinner mientras se valida el QR */}
           {isLoading && (
             <View style={styles.loaderContainer}>
               <ActivityIndicator size="large" color="#3D550C" />
               <Text>Validando código QR...</Text>
             </View>
           )}
+          {errorMessage && <Text>{errorMessage}</Text>}
         </View>
       )}
 

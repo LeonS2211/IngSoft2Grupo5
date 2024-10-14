@@ -13,7 +13,7 @@ const useProfileViewModel = () => {
       const userId = await AsyncStorage.getItem("userId");
       if (!userId) {
         throw new Error(
-          "No se pudo encontrar el ID del usuario en AsyncStorage."
+          "No se pudo encontrar el ID del usuario en AsyncStorage.",
         );
       }
       return userId;
