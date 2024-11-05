@@ -3,7 +3,7 @@
 import { DataTypes } from "sequelize"
 import sequelize from '../config/database.js'
 
-const Usuario = sequelize.define('usuarios', {
+const Administrador = sequelize.define('administradores', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -20,18 +20,7 @@ const Usuario = sequelize.define('usuarios', {
     contraseña: {
         type: DataTypes.STRING,
         allowNull: false
-    },
-    puntos: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    codigoAmistad: {
-        type: DataTypes.STRING(10),
-        allowNull: false
-    },
-    nombre: {
-        type: DataTypes.STRING,
     }
 })
 
-export default Usuario
+export default Administrador
