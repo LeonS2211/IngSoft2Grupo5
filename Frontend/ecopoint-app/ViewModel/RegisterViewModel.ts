@@ -1,5 +1,5 @@
 import UsuariosApi from "../api/usuario";
-import { Usuario } from "../Models/usuarioModel"; // Asegúrate de que este path sea correcto
+import { Usuario } from "../Models/usuarioModel";
 import { useState } from "react";
 
 const useRegisterViewModel = () => {
@@ -54,6 +54,7 @@ const useRegisterViewModel = () => {
         contraseña: password,
         puntos,
         codigoAmistad,
+        nombre: email,
       };
 
       const response = await UsuariosApi.create(newUser);
@@ -63,7 +64,7 @@ const useRegisterViewModel = () => {
         return true; // Devuelve true si el registro fue exitoso
       } else {
         setErrorMessage(
-          response?.data?.message || "Hubo un error al registrar el usuario.",
+          response?.data?.message || "Hubo un error al registrar el usuario."
         );
         return false;
       }
