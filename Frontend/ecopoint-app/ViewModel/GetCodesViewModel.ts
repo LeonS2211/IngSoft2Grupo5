@@ -2,10 +2,13 @@ import { useState } from "react";
 import CodigosQRApi from "../api/codigoQR";
 import * as Location from "expo-location";
 import UbicacionesApi from "../api/ubicacion";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import UsuarioPuntoReciclajeApi from "../api/usuarioPuntoReciclaje";
 
 type QRCode = {
   contenido: string;
   puntoReciclaje: {
+    id: number;
     idUbicacion: number;
   } | null;
 };
@@ -26,6 +29,21 @@ const useGetCodesModel = () => {
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
     });
+  };
+
+  const getUserId = async (): Promise<string | null> => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      if (!userId) {
+        throw new Error(
+          "No se pudo encontrar el ID del usuario en AsyncStorage.",
+        );
+      }
+      return userId;
+    } catch (error) {
+      console.error("Error al obtener el userId del almacenamiento:", error);
+      return null;
+    }
   };
 
   // Fórmula de Haversine para calcular la distancia entre dos puntos
@@ -109,7 +127,17 @@ const useGetCodesModel = () => {
       );
 
       // Verificar si la distancia es menor o igual a 2 metros
-      return distancia <= 0.01;
+      if (distancia <= 0.01) {
+        const userIdP = await getUserId();
+        if (userIdP === null) {
+          throw new Error("userIdP no debería ser null");
+        }
+        const userId = parseInt(userIdP, 10);
+        visitedPR(userId, codigoEncontrado.puntoReciclaje.id);
+        return true;
+      } else {
+        return false;
+      }
     } catch (error: any) {
       console.error(
         "Error al obtener la ubicación del punto de reciclaje:",
@@ -117,6 +145,46 @@ const useGetCodesModel = () => {
       );
       setErrorMessage("Error en la solicitud al obtener la ubicación.");
       return false;
+    }
+  };
+
+  const visitedPR = async (
+    idUsuario: number,
+    idPuntoReciclaje: number,
+  ): Promise<void> => {
+    try {
+      // Obtener todos los registros de visitas
+      const allVisits = await UsuarioPuntoReciclajeApi.findAll();
+
+      // Filtrar para ver si ya existe una visita del usuario a este punto de reciclaje
+      const existingVisit = allVisits?.data.find(
+        (visit) =>
+          visit.idUsuario === idUsuario &&
+          visit.idPuntoReciclaje === idPuntoReciclaje,
+      );
+
+      // Si ya existe un registro, no hacer nada
+      if (existingVisit) {
+        console.log("El usuario ya ha visitado este punto de reciclaje.");
+        return;
+      }
+
+      // Crear el registro si no existe
+      const response = await UsuarioPuntoReciclajeApi.create({
+        idUsuario: idUsuario,
+        idPuntoReciclaje: idPuntoReciclaje,
+      });
+
+      if (response?.status === 201) {
+        console.log("Punto de reciclaje marcado como visitado exitosamente.");
+      } else {
+        console.error("Error al marcar el punto de reciclaje como visitado.");
+      }
+    } catch (error) {
+      console.error(
+        "Error en la solicitud al marcar el punto de reciclaje:",
+        error,
+      );
     }
   };
 
