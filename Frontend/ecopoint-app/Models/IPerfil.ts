@@ -3,7 +3,7 @@ export interface IPerfil {
   setPerfil(
     nombre: string,
     correoElectronico: string,
-    numTelefono: number,
+    contraseña: string
   ): void;
   mostrarDetalles(): string;
 }
