@@ -17,30 +17,33 @@ const { width } = Dimensions.get("window");
 
 const ProfileScreen: React.FC = () => {
   const router = useRouter();
-  const { email, isLoading, errorMessage, fetchEmail } = useProfileViewModel();
+  const {
+    email,
+    puntos,
+    rankingPosition,
+    isLoading,
+    errorMessage,
+    fetchEmail,
+    logout,
+  } = useProfileViewModel();
 
   useEffect(() => {
-    fetchEmail(); // Llamamos a la función para obtener el correo al cargar la pantalla
+    fetchEmail();
   }, []);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Flecha para retroceder */}
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <FontAwesome5 name="arrow-left" size={24} color="green" />
       </TouchableOpacity>
 
-      {/* Imagen de fondo detrás del perfil */}
       <View style={styles.headerBackground}>
         <Image
-          source={{
-            uri: "../assets/fondo.jpeg",
-          }}
+          source={require("../assets/fondo.jpeg")}
           style={styles.headerImage}
         />
       </View>
 
-      {/* Imagen de perfil sobrepuesta */}
       <View style={styles.profileContainer}>
         <View style={styles.profilePicContainer}>
           <Image
@@ -60,10 +63,8 @@ const ProfileScreen: React.FC = () => {
         ) : (
           <Text style={styles.name}>{email || "Cargando..."}</Text>
         )}
-        <Text style={styles.phone}>+51 915 131 135</Text>
       </View>
 
-      {/* Botones de agregar amigos y mis amigos */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}
@@ -76,44 +77,51 @@ const ProfileScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Estadísticas */}
       <View style={styles.statsSection}>
         <Text style={styles.sectionTitle}>Estadísticas</Text>
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
             <FontAwesome5 name="recycle" size={24} color="green" />
             <View style={styles.statTextContainer}>
-              <Text style={styles.statNumber}>20</Text>
+              <Text style={styles.statNumber}>-</Text>
               <Text style={styles.statLabel}>Cantidad total</Text>
             </View>
           </View>
           <View style={styles.statItem}>
             <FontAwesome5 name="calendar-alt" size={24} color="green" />
             <View style={styles.statTextContainer}>
-              <Text style={styles.statNumber}>1</Text>
+              <Text style={styles.statNumber}>-</Text>
               <Text style={styles.statLabel}>Días de racha</Text>
             </View>
           </View>
           <View style={styles.statItem}>
             <FontAwesome5 name="star" size={24} color="green" />
             <View style={styles.statTextContainer}>
-              <Text style={styles.statNumber}>250</Text>
+              <Text style={styles.statNumber}>
+                {puntos !== null ? puntos : "Cargando..."}
+              </Text>
               <Text style={styles.statLabel}>Puntaje total</Text>
             </View>
           </View>
           <View style={styles.statItem}>
             <FontAwesome5 name="chart-bar" size={24} color="green" />
             <View style={styles.statTextContainer}>
-              <Text style={styles.statNumber}>3</Text>
+              <Text style={styles.statNumber}>
+                {rankingPosition !== null
+                  ? `${rankingPosition}`
+                  : "Cargando..."}
+              </Text>
               <Text style={styles.statLabel}>Ranking</Text>
             </View>
           </View>
         </View>
       </View>
 
-      {/* Configuración y soporte */}
       <View style={styles.optionsContainer}>
-        <TouchableOpacity style={styles.optionItem}>
+        <TouchableOpacity
+          style={styles.optionItem}
+          onPress={() => router.push("/configuracion")}
+        >
           <FontAwesome5 name="cog" size={20} color="#9E9E9E" />
           <Text style={styles.optionText}>Configuración</Text>
         </TouchableOpacity>
@@ -123,8 +131,13 @@ const ProfileScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Botón de cerrar sesión */}
-      <TouchableOpacity style={styles.logoutButton}>
+      <TouchableOpacity
+        style={styles.logoutButton}
+        onPress={() => {
+          logout();
+          router.push("/");
+        }}
+      >
         <FontAwesome5 name="sign-out-alt" size={24} color="#FF3D3D" />
         <Text style={styles.logoutText}>Cerrar sesión</Text>
       </TouchableOpacity>
@@ -185,6 +198,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   name: {
+    marginVertical: 18,
     fontSize: 26,
     fontWeight: "bold",
     color: "#4CAF50",
@@ -209,7 +223,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "bold",
     color: "#2D2D2D",
   },
@@ -273,7 +287,7 @@ const styles = StyleSheet.create({
   logoutButton: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 20,
+    padding: 10,
     borderRadius: 10,
     justifyContent: "flex-start",
     width: "100%",
