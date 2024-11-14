@@ -1,4 +1,4 @@
-GET http://localhost:3001/codigoQR
+GET https://backgrupo5-production.up.railway.app/puntoReciclaje
 ########
 
 POST http://localhost:3001/puntoReciclaje
@@ -11,19 +11,27 @@ Content-Type: application/json
  "codigoAmistad":"ABCD2143JK"
 }
 ###
+POST https://backgrupo5-production.up.railway.app/objetivo
+Content-Type: application/json
+
+{
+  "descripcion": "Recicla en 3 puntos de reciclaje esta semana", 
+  "numObjetivo": 3
+}
+###
 POST https://backgrupo5-production.up.railway.app/ubicacion
 Content-Type: application/json
 
 {
-  "latitud": -12.00108253960971, 
-  "longitud": -77.02039977116344
+  "latitud": -12.085409261835768, 
+  "longitud": -76.97114735029373
 }
 ###
-POST http://localhost:3001/codigoQR
+POST https://backgrupo5-production.up.railway.app/codigoQR
 Content-Type: application/json
 
 {
-  "contenido": "ecopoint1"
+  "contenido": "ecopoint2"
 }
 ###
 POST https://backgrupo5-production.up.railway.app/puntoReciclaje
@@ -32,7 +40,7 @@ Content-Type: application/json
 {
  "idUbicacion": 2,
  "idCodigoQR": 2,
- "nombre": "CasaLPruebas", 
+ "nombre": "Universidad de Lima", 
  "descripcion": "cerca del edificio x, contenedor azul"
 }
 ###

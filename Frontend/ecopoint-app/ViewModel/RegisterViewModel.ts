@@ -55,6 +55,8 @@ const useRegisterViewModel = () => {
         puntos,
         codigoAmistad,
         nombre: email,
+        msgSoporte: "", // Incluir msgSoporte en el nuevo usuario"",
+        puntosObjetivo: 0, // Asegurar que msgSoporte esté incluido
       };
 
       const response = await UsuariosApi.create(newUser);
