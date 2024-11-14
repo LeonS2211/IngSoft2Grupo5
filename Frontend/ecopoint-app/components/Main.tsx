@@ -1,11 +1,27 @@
-import { StyleSheet, Text, View, Image } from "react-native";
-import { Link } from "expo-router";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { Link, router } from "expo-router";
 import React from "react";
+import { Ionicons } from "@expo/vector-icons"; // Asegúrate de instalar esta dependencia o importar tu ícono
+
 const trash = require("../assets/trash.png");
 
 export function Main() {
   return (
     <View style={styles.container}>
+      {/* Ícono de Configuración */}
+      <TouchableOpacity
+        style={styles.settingsIcon}
+        onPress={() => {
+          
+
+
+          // Redirige a la pantalla de login del administrador
+          router.push("/loginAdministrador");
+        }}
+      >
+        <Ionicons name="settings-outline" size={30} color="#52734D" />
+      </TouchableOpacity>
+
       <Image source={trash} style={styles.logo} />
 
       <Text style={styles.title}>ECOPOINT</Text>
@@ -28,6 +44,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#FFFFFF",
     paddingTop: 5,
+  },
+  settingsIcon: {
+    position: "absolute",
+    top: 40,
+    right: 20,
   },
   logo: {
     width: 200,
