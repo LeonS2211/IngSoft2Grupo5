@@ -3,9 +3,9 @@
 import { DataTypes } from "sequelize"
 import sequelize from '../config/database.js'
 import Usuario from "./usuario.js"
-import Objetivo from "./objetivo.js"
+import Recompensa from "./recompensa.js"
 
-const UsuarioObjetivo = sequelize.define('usuarioObjetivos', {
+const UsuarioRecompensa = sequelize.define('usuarioRecompensas', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -16,32 +16,28 @@ const UsuarioObjetivo = sequelize.define('usuarioObjetivos', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    idObjetivo: {
+    idRecompensa: {
         type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    progreso: {
-        type: DataTypes.FLOAT,
         allowNull: false
     }
 })
 
-Objetivo.hasMany(UsuarioObjetivo, {
-    foreignKey: 'idObjetivo',
+Recompensa.hasMany(UsuarioRecompensa, {
+    foreignKey: 'idRecompensa',
     targetId: 'id'
 })
-UsuarioObjetivo.belongsTo(Objetivo, {
-    foreignKey: 'idObjetivo',
-    targetId: 'id'
-})
-
-Usuario.hasMany(UsuarioObjetivo, {
-    foreignKey: 'idUsuario',
-    targetId: 'id'
-})
-UsuarioObjetivo.belongsTo(Usuario, {
-    foreignKey: 'idUsuario',
+UsuarioRecompensa.belongsTo(Recompensa, {
+    foreignKey: 'idRecompensa',
     targetId: 'id'
 })
 
-export default UsuarioObjetivo
+Usuario.hasMany(UsuarioRecompensa, {
+    foreignKey: 'idUsuario',
+    targetId: 'id'
+})
+UsuarioRecompensa.belongsTo(Usuario, {
+    foreignKey: 'idUsuario',
+    targetId: 'id'
+})
+
+export default UsuarioRecompensa
