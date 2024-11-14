@@ -5,6 +5,7 @@ import { useState } from "react";
 const useRegisterViewModel = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [msgSoporte, setMsgSoporte] = useState<string>(""); // Estado para msgSoporte
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -55,12 +56,16 @@ const useRegisterViewModel = () => {
         puntos,
         codigoAmistad,
         nombre: email,
+        msgSoporte: "", // Incluir msgSoporte en el nuevo usuario"",
+        puntosObjetivo: 0,
+        msgResponseSoporte: "",
       };
 
       const response = await UsuariosApi.create(newUser);
 
       if (response?.status === 200 || response?.status === 201) {
         alert("Registro exitoso");
+        setMsgSoporte(""); // Limpiar msgSoporte después del registro
         return true; // Devuelve true si el registro fue exitoso
       } else {
         setErrorMessage(
@@ -80,10 +85,12 @@ const useRegisterViewModel = () => {
   return {
     email,
     password,
+    msgSoporte, // Incluir msgSoporte en el estado devuelto
     isLoading,
     errorMessage,
     setEmail,
     setPassword,
+    setMsgSoporte, // Permitir que msgSoporte se actualice
     onSubmit,
   };
 };

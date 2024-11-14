@@ -1,5 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import React from "react";
+import { router } from "expo-router";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 
 export default function BotBar() {
@@ -18,9 +19,12 @@ export default function BotBar() {
           <FontAwesome5 name="gift" size={24} color="gray" />
           <Text style={styles.navText}>Recompensas</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push("/comentarios")}
+        >
           <FontAwesome5 name="users" size={24} color="gray" />
-          <Text style={styles.navText}>Comunidad</Text>
+          <Text style={styles.navText}>comentarios</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
           <FontAwesome5 name="map" size={24} color="gray" />

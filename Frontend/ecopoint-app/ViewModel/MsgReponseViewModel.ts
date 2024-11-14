@@ -5,7 +5,7 @@ import UsuariosApi from "../api/usuario";
 const useFeedbackViewModel = () => {
   const [comment, setComment] = useState("");
   const maxCharacters = 120;
-  const COMMENT_KEY = "user_comment"; // Clave para almacenar el comentario en AsyncStorage
+  const COMMENT_KEY = "user_comment";
 
   const loadStoredComment = async () => {
     try {
@@ -73,14 +73,12 @@ const useFeedbackViewModel = () => {
       // Actualizar msgSoporte del usuario con el comentario
       const response = await UsuariosApi.update({
         id: userId,
-        msgSoporte: comment,
+        msgResponseSoporte: comment,
       });
 
       if (response?.status === 200) {
-        alert(
-          "Te agredecemos por tus comentarios , soporte analizará su comentario."
-        );
-        clearStoredComment(); // Limpiar el comentario después de enviarlo
+        alert("Respuesta enviada correctamente");
+        clearStoredComment();
         return true;
       } else {
         console.error("Error al actualizar el comentario:", response?.data);

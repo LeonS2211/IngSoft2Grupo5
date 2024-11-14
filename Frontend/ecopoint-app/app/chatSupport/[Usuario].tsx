@@ -11,7 +11,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
-import useFeedbackViewModel from "../ViewModel/SoporteViewModel";
+import useFeedbackViewModel from "../../ViewModel/MsgReponseViewModel";
 
 const FeedbackScreen = () => {
   const { comment, maxCharacters, handleCommentChange, handleSendFeedback } =
