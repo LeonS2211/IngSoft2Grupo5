@@ -73,6 +73,14 @@ const MainAdmin: React.FC = () => {
         <Text style={styles.buttonText}>Gestion de soporte</Text>
       </TouchableOpacity>
 
+      {/* Botón para los objetivos */}
+      <TouchableOpacity
+        style={styles.informeButton}
+        onPress={() => router.push("/objetivosAdmin")}
+      >
+        <Text style={styles.buttonText}>Agregar Objetivos</Text>
+      </TouchableOpacity>
+
       {/* Mostrar los detalles del usuario si se encontraron */}
       {userDetails && (
         <View style={styles.userDetailsContainer}>

@@ -10,6 +10,22 @@ import {
 import * as Progress from "react-native-progress"; // Use for circular progress
 import { FontAwesome5 } from "@expo/vector-icons"; // For navigation icons
 import BotBar from "../components/BotBar"; // Replace with your bottom bar component
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const getUserId = async (): Promise<string | null> => {
+  try {
+    const userId = await AsyncStorage.getItem("userId");
+    if (!userId) {
+      throw new Error(
+        "No se pudo encontrar el ID del usuario en AsyncStorage."
+      );
+    }
+    return userId;
+  } catch (error) {
+    console.error("Error al obtener el userId del almacenamiento:", error);
+    return null;
+  }
+};
 
 const Recompensas: React.FC = () => {
   const rewards = [
