@@ -10,10 +10,12 @@ import {
 import { FontAwesome5 } from "@expo/vector-icons";
 import useTop10FirstUsersViewModel from "../ViewModel/ComentariosViewModel";
 import { router } from "expo-router";
+import { useIsFocused } from "@react-navigation/native";
 
 const AdminCommentsScreen = () => {
   const { users, isLoading, errorMessage, fetchTop10FirstUsers } =
     useTop10FirstUsersViewModel();
+  const isFocused = useIsFocused(); // Detecta si la pantalla está enfocada
 
   const renderComment = ({ item }) => (
     <View style={styles.commentContainer}>
@@ -30,7 +32,11 @@ const AdminCommentsScreen = () => {
       </TouchableOpacity>
     </View>
   );
-
+  useEffect(() => {
+    if (isFocused) {
+      fetchTop10FirstUsers(); // Borra el almacenamiento cuando la pantalla se enfoca
+    }
+  }, [isFocused]);
   return (
     <View style={styles.container}>
       <View style={styles.header}>

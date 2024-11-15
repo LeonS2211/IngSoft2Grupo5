@@ -15,25 +15,25 @@ POST https://backgrupo5-production.up.railway.app/ubicacion
 Content-Type: application/json
 
 {
-  "latitud": -12.00108253960971, 
-  "longitud": -77.02039977116344
+  "latitud": 37.42197690113764, 
+  "longitud": -122.08396590792049
 }
 ###
-POST http://localhost:3001/codigoQR
+POST https://backgrupo5-production.up.railway.app/codigoQR
 Content-Type: application/json
 
 {
-  "contenido": "ecopoint1"
+  "contenido": "ecopoint3"
 }
 ###
 POST https://backgrupo5-production.up.railway.app/puntoReciclaje
 Content-Type: application/json
 
 {
- "idUbicacion": 2,
- "idCodigoQR": 2,
- "nombre": "CasaLPruebas", 
- "descripcion": "cerca del edificio x, contenedor azul"
+ "idUbicacion": 3,
+ "idCodigoQR": 3,
+ "nombre": "GooglePlexPruebas", 
+ "descripcion": "cerca de B40 y B43"
 }
 ###
 POST https://backgrupo5-production.up.railway.app/usuarioPuntoReciclaje

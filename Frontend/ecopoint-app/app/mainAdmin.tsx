@@ -1,4 +1,4 @@
-import { Link } from "expo-router"
+import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -42,7 +42,6 @@ const MainAdmin: React.FC = () => {
 
   // Manejar la búsqueda del usuario por ID
 
-
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -58,16 +57,20 @@ const MainAdmin: React.FC = () => {
         Bienvenido Administrador{adminName ? `, ${adminName}` : ""}
       </Text>
 
-      
-    
-
       {/* Botón para ver el informe sobre usuario */}
       <TouchableOpacity
         style={styles.informeButton}
         onPress={() => router.push("/informe")}
-      
       >
         <Text style={styles.buttonText}>Informe sobre Usuario</Text>
+      </TouchableOpacity>
+
+      {/* Botón para ver los comentarios */}
+      <TouchableOpacity
+        style={styles.informeButton}
+        onPress={() => router.push("/comentarios")}
+      >
+        <Text style={styles.buttonText}>Gestion de soporte</Text>
       </TouchableOpacity>
 
       {/* Mostrar los detalles del usuario si se encontraron */}

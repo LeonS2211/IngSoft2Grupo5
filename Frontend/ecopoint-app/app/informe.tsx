@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"; 
+import React from "react";
 import {
   View,
   Text,
@@ -9,70 +9,20 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
-import { useRouter } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import UsuariosApi from "../api/usuario"; // Importa la API de usuario
+import useInformeViewModel from "../ViewModel/InformeViewModel";
 
-const Informe: React.FC = () => {
-  const router = useRouter(); // Hook para la navegación
-  const [adminName, setAdminName] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [userEmail, setUserEmail] = useState<string>(""); // Cambio a búsqueda por email
-  const [userDetails, setUserDetails] = useState<any | null>(null);
-
-  // Obtener el nombre del administrador al cargar la pantalla
-  useEffect(() => {
-    const fetchAdminName = async () => {
-      try {
-        // Obtener los datos del administrador del almacenamiento local
-        const adminData = await AsyncStorage.getItem("adminToken");
-        if (adminData) {
-          const parsedData = JSON.parse(adminData);
-          setAdminName(parsedData.nombre); // Suponiendo que 'nombre' está en el token
-        }
-      } catch (error) {
-        console.error("Error al obtener los datos del administrador:", error);
-      }
-    };
-
-    fetchAdminName();
-  }, []);
-
-  // Manejar la búsqueda del usuario por email
-  const handleUserSearch = async () => {
-    setIsLoading(true);
-    try {
-      // Obtener todos los usuarios para filtrar el email
-      const response = await UsuariosApi.findAll();
-      if (response && response.data) {
-        // Buscar el usuario por email dentro de la lista de usuarios
-        const foundUser = response.data.find((user) => user.email === userEmail);
-        if (foundUser) {
-          setUserDetails(foundUser);
-        } else {
-          Alert.alert("Error", "Usuario no encontrado");
-        }
-      } else {
-        Alert.alert("Error", "No se pudo recuperar la lista de usuarios");
-      }
-    } catch (error) {
-      console.error("Error al buscar el usuario:", error);
-      Alert.alert("Error", "No se pudo encontrar al usuario, intenta nuevamente");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Formatear las fechas al formato deseado "Año-Mes-Día Hora:Minutos"
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // El mes es de 0-11, así que sumamos 1 y lo formateamos a dos dígitos
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${day} ${hours}:${minutes}`;
-  };
+const InformeView = () => {
+  const {
+    adminName,
+    isLoading,
+    userEmail,
+    userDetails,
+    amigos,
+    puntosReciclaje,
+    setUserEmail,
+    handleUserSearch,
+    formatDate,
+  } = useInformeViewModel();
 
   if (isLoading) {
     return (
@@ -84,12 +34,10 @@ const Informe: React.FC = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Mensaje de bienvenida */}
       <Text style={styles.title}>
         Bienvenido Administrador{adminName ? `, ${adminName}` : ""}
       </Text>
 
-      {/* Campo de entrada para buscar un usuario por email */}
       <TextInput
         style={styles.input}
         placeholder="Ingrese el correo electrónico del usuario"
@@ -99,7 +47,6 @@ const Informe: React.FC = () => {
         autoCapitalize="none"
       />
 
-      {/* Botón para ver el informe sobre usuario */}
       <TouchableOpacity
         style={styles.informeButton}
         onPress={handleUserSearch}
@@ -108,7 +55,6 @@ const Informe: React.FC = () => {
         <Text style={styles.buttonText}>Informe sobre Usuario</Text>
       </TouchableOpacity>
 
-      {/* Mostrar los detalles del usuario si se encontraron */}
       {userDetails && (
         <View style={styles.userDetailsContainer}>
           <Text style={styles.userDetailsTitle}>Detalles del Usuario:</Text>
@@ -127,13 +73,17 @@ const Informe: React.FC = () => {
           <View style={styles.detailItem}>
             <Text style={styles.detailLabel}>Fecha de Creación:</Text>
             <Text style={styles.detailValue}>
-              {userDetails.createdAt ? formatDate(userDetails.createdAt) : "N/A"}
+              {userDetails.createdAt
+                ? formatDate(userDetails.createdAt)
+                : "N/A"}
             </Text>
           </View>
           <View style={styles.detailItem}>
             <Text style={styles.detailLabel}>Última Actividad:</Text>
             <Text style={styles.detailValue}>
-              {userDetails.updatedAt ? formatDate(userDetails.updatedAt) : "N/A"}
+              {userDetails.updatedAt
+                ? formatDate(userDetails.updatedAt)
+                : "N/A"}
             </Text>
           </View>
           <View style={styles.detailItem}>
@@ -144,13 +94,13 @@ const Informe: React.FC = () => {
           </View>
           <View style={styles.detailItem}>
             <Text style={styles.detailLabel}>Amigos Registrados:</Text>
-            <Text style={styles.detailValue}>{userDetails.amigos?.length ?? 0}</Text>
+            <Text style={styles.detailValue}>{amigos.length}</Text>
           </View>
           <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Puntos de Reciclaje Escaneados:</Text>
-            <Text style={styles.detailValue}>
-              {userDetails.puntosReciclajeEscaneados?.length ?? 0}
+            <Text style={styles.detailLabel}>
+              Puntos de Reciclaje Escaneados:
             </Text>
+            <Text style={styles.detailValue}>{puntosReciclaje.length}</Text>
           </View>
         </View>
       )}
@@ -158,7 +108,6 @@ const Informe: React.FC = () => {
   );
 };
 
-// Estilos
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -187,10 +136,6 @@ const styles = StyleSheet.create({
     borderColor: "#E6E6E6",
     marginBottom: 15,
     backgroundColor: "#FFFFFF",
-    shadowColor: "#171717",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
   },
   informeButton: {
     width: "80%",
@@ -199,10 +144,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#52734D",
     alignItems: "center",
     marginVertical: 20,
-    shadowColor: "#171717",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
   },
   buttonText: {
     fontSize: 16,
@@ -215,10 +156,6 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 12,
     backgroundColor: "#FFFFFF",
-    shadowColor: "#171717",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
   },
   userDetailsTitle: {
     fontSize: 22,
@@ -243,4 +180,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Informe;
+export default InformeView;

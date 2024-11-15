@@ -15,7 +15,12 @@ const useTop10FirstUsersViewModel = () => {
 
       if (response?.status === 200) {
         const sortedUsers = response.data
-          .filter((user) => user.msgSoporte && user.msgSoporte.trim() !== "") // Filtrar usuarios con msgSoporte
+          .filter(
+            (user) =>
+              user.msgSoporte &&
+              user.msgSoporte.trim() !== "" &&
+              user.msgResponseSoporte.trim() === ""
+          ) // Filtrar usuarios con msgSoporte
           .sort((a, b) => new Date(a.fechaRegistro) - new Date(b.fechaRegistro)) // Ordenar por fecha de registro
           .slice(0, 10); // Tomar los primeros 10 usuarios
 

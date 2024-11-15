@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router"; // Importa useRouter para la navegación
-import useLoginViewModel from "../ViewModel/LoginViewModel"; // ViewModel reutilizado
+import useLoginViewModel from "../ViewModel/LoginAdminViewModel"; // ViewModel reutilizado
 
 const LoginAdminScreen: React.FC = () => {
   const router = useRouter(); // Hook para la navegación

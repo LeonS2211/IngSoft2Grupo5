@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import useFeedbackViewModel from "../../ViewModel/MsgReponseViewModel";
+import { useRouter } from "expo-router"; // Uso de useRouter para la navegación
 
 const FeedbackScreen = () => {
   const {
@@ -25,14 +26,15 @@ const FeedbackScreen = () => {
 
   const [messages, setMessages] = useState([]); // Store all messages
   const [hasFetched, setHasFetched] = useState(false); // Prevent infinite fetching
-
+  const router = useRouter();
   const handleSend = async () => {
     const success = await handleSendFeedback();
     if (success) {
       setMessages((prevMessages) => [
         ...prevMessages,
         { text: comment, isUser: true }, // Add sent message
-      ]);
+      ]); // Update with the latest message
+      router.back();
     }
   };
 

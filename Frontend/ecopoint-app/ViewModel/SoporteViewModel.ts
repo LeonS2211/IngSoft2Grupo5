@@ -5,53 +5,26 @@ import UsuariosApi from "../api/usuario";
 const useFeedbackViewModel = () => {
   const [comment, setComment] = useState("");
   const maxCharacters = 120;
-  const COMMENT_KEY = "user_comment"; // Clave para almacenar el comentario en AsyncStorage
-
-  const loadStoredComment = async () => {
-    try {
-      const storedComment = await AsyncStorage.getItem(COMMENT_KEY);
-      if (storedComment) {
-        setComment(storedComment);
-      }
-    } catch (error) {
-      console.error("Error al cargar el comentario almacenado:", error);
-    }
-  };
+  const [lastMsgSoporte, setLastMsgSoporte] = useState(null); // To track the last msgSoporte
 
   const getUserId = async () => {
     try {
       const userId = await AsyncStorage.getItem("userId");
-      if (!userId)
-        throw new Error("ID de usuario no encontrado en AsyncStorage");
-      return parseInt(userId, 10);
+      if (!userId) {
+        throw new Error(
+          "No se pudo encontrar el ID del usuario en AsyncStorage."
+        );
+      }
+      return userId;
     } catch (error) {
-      console.error("Error al obtener el ID del usuario:", error);
+      console.error("Error al obtener el userId del almacenamiento:", error);
       return null;
-    }
-  };
-
-  // Guardar el comentario en AsyncStorage
-  const saveCommentToStorage = async (text) => {
-    try {
-      await AsyncStorage.setItem(COMMENT_KEY, text);
-    } catch (error) {
-      console.error("Error al guardar el comentario:", error);
-    }
-  };
-
-  const clearStoredComment = async () => {
-    try {
-      await AsyncStorage.removeItem(COMMENT_KEY);
-      setComment("");
-    } catch (error) {
-      console.error("Error al limpiar el comentario almacenado:", error);
     }
   };
 
   const handleCommentChange = (text) => {
     if (text.length <= maxCharacters) {
       setComment(text);
-      saveCommentToStorage(text); // Guardar automáticamente el comentario
     }
   };
 
@@ -63,24 +36,19 @@ const useFeedbackViewModel = () => {
 
     try {
       const userId = await getUserId();
-      if (!userId) {
-        alert(
-          "No se encontró el usuario. Por favor, inicia sesión nuevamente."
-        );
-        return false;
-      }
 
-      // Actualizar msgSoporte del usuario con el comentario
+      if (!userId) {
+        console.error("No se pudo obtener el ID del usuario.");
+        return;
+      }
       const response = await UsuariosApi.update({
         id: userId,
         msgSoporte: comment,
       });
 
       if (response?.status === 200) {
-        alert(
-          "Te agredecemos por tus comentarios , soporte analizará su comentario."
-        );
-        clearStoredComment(); // Limpiar el comentario después de enviarlo
+        alert("Gracias por tu comentario. Lo revisaremos pronto.");
+        setComment("");
         return true;
       } else {
         console.error("Error al actualizar el comentario:", response?.data);
@@ -97,17 +65,17 @@ const useFeedbackViewModel = () => {
   const fetchMsgSoporte = async () => {
     try {
       const userId = await getUserId();
-      if (!userId) return null;
-
-      const response = await UsuariosApi.findOne(userId);
+      const response = await UsuariosApi.findOne(parseInt(userId, 10));
       if (response?.status === 200) {
-        // Si llega un nuevo msgSoporte, limpiar msgResponseSoporte
-        if (response.data.msgSoporte) {
-          await clearMsgResponseSoporte();
+        const user = response.data;
+        // Check if msgSoporte is new
+        if (user.msgSoporte !== lastMsgSoporte) {
+          setLastMsgSoporte(user.msgSoporte); // Update the last seen msgSoporte
         }
-        return response.data.msgSoporte || "";
+
+        return user.msgSoporte || "";
       } else {
-        console.error("Error al obtener el msgSoporte:", response?.data);
+        console.error("Error al obtener el mensaje de soporte.");
         return null;
       }
     } catch (error) {
@@ -119,16 +87,12 @@ const useFeedbackViewModel = () => {
   const fetchMsgResponseSoporte = async () => {
     try {
       const userId = await getUserId();
-      if (!userId) return null;
-
-      const response = await UsuariosApi.findOne(userId);
+      const response = await UsuariosApi.findOne(parseInt(userId, 10));
       if (response?.status === 200) {
-        return response.data.msgResponseSoporte || "";
+        const user = response.data;
+        return user.msgResponseSoporte || "";
       } else {
-        console.error(
-          "Error al obtener el msgResponseSoporte:",
-          response?.data
-        );
+        console.error("Error al obtener el msgResponseSoporte.");
         return null;
       }
     } catch (error) {
@@ -140,8 +104,6 @@ const useFeedbackViewModel = () => {
   const clearMsgResponseSoporte = async () => {
     try {
       const userId = await getUserId();
-      if (!userId) return;
-
       const response = await UsuariosApi.update({
         id: userId,
         msgResponseSoporte: "", // Clear the msgResponseSoporte field
@@ -161,7 +123,13 @@ const useFeedbackViewModel = () => {
   };
 
   useEffect(() => {
-    loadStoredComment();
+    const fetchInitialData = async () => {
+      const msgSoporte = await fetchMsgSoporte();
+      if (msgSoporte) {
+        setLastMsgSoporte(msgSoporte); // Initialize lastMsgSoporte
+      }
+    };
+    fetchInitialData();
   }, []);
 
   return {
@@ -172,7 +140,6 @@ const useFeedbackViewModel = () => {
     fetchMsgSoporte,
     fetchMsgResponseSoporte,
     clearMsgResponseSoporte,
-    clearStoredComment,
   };
 };
 
