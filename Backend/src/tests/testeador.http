@@ -1,4 +1,4 @@
-GET http://localhost:3001/codigoQR
+GET https://backgrupo5-production.up.railway.app/puntoReciclaje
 ########
 
 POST http://localhost:3001/puntoReciclaje
@@ -9,6 +9,14 @@ Content-Type: application/json
  "contraseña": "1234", 
  "puntos": 0, 
  "codigoAmistad":"ABCD2143JK"
+}
+###
+POST https://backgrupo5-production.up.railway.app/objetivo
+Content-Type: application/json
+
+{
+  "descripcion": "Recicla en 3 puntos de reciclaje esta semana", 
+  "numObjetivo": 3
 }
 ###
 POST https://backgrupo5-production.up.railway.app/ubicacion

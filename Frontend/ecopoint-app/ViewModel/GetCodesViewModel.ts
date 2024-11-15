@@ -127,7 +127,7 @@ const useGetCodesModel = () => {
       );
 
       // Verificar si la distancia es menor o igual a 2 metros
-      if (distancia <= 0.01) {
+      if (distancia <= 0.1) {
         const userIdP = await getUserId();
         if (userIdP === null) {
           throw new Error("userIdP no debería ser null");
