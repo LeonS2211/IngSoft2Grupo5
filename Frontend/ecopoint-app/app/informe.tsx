@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"; 
 import {
   View,
   Text,
@@ -7,16 +7,17 @@ import {
   TextInput,
   ActivityIndicator,
   Alert,
+  ScrollView,
 } from "react-native";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import UsuariosApi from "../api/usuario"; // Importa la API de usuario
 
-const informe: React.FC = () => {
+const Informe: React.FC = () => {
   const router = useRouter(); // Hook para la navegación
   const [adminName, setAdminName] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [userId, setUserId] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [userEmail, setUserEmail] = useState<string>(""); // Cambio a búsqueda por email
   const [userDetails, setUserDetails] = useState<any | null>(null);
 
   // Obtener el nombre del administrador al cargar la pantalla
@@ -31,23 +32,28 @@ const informe: React.FC = () => {
         }
       } catch (error) {
         console.error("Error al obtener los datos del administrador:", error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
     fetchAdminName();
   }, []);
 
-  // Manejar la búsqueda del usuario por ID
+  // Manejar la búsqueda del usuario por email
   const handleUserSearch = async () => {
     setIsLoading(true);
     try {
-      const response = await UsuariosApi.findOne(userId);
-      if (response) {
-        setUserDetails(response.data);
+      // Obtener todos los usuarios para filtrar el email
+      const response = await UsuariosApi.findAll();
+      if (response && response.data) {
+        // Buscar el usuario por email dentro de la lista de usuarios
+        const foundUser = response.data.find((user) => user.email === userEmail);
+        if (foundUser) {
+          setUserDetails(foundUser);
+        } else {
+          Alert.alert("Error", "Usuario no encontrado");
+        }
       } else {
-        Alert.alert("Error", "Usuario no encontrado");
+        Alert.alert("Error", "No se pudo recuperar la lista de usuarios");
       }
     } catch (error) {
       console.error("Error al buscar el usuario:", error);
@@ -55,6 +61,17 @@ const informe: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Formatear las fechas al formato deseado "Año-Mes-Día Hora:Minutos"
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // El mes es de 0-11, así que sumamos 1 y lo formateamos a dos dígitos
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
   };
 
   if (isLoading) {
@@ -66,19 +83,19 @@ const informe: React.FC = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       {/* Mensaje de bienvenida */}
       <Text style={styles.title}>
         Bienvenido Administrador{adminName ? `, ${adminName}` : ""}
       </Text>
 
-      {/* Campo de entrada para buscar un usuario */}
+      {/* Campo de entrada para buscar un usuario por email */}
       <TextInput
         style={styles.input}
-        placeholder="Ingrese el ID del usuario"
-        value={userId}
-        onChangeText={setUserId}
-        keyboardType="numeric"
+        placeholder="Ingrese el correo electrónico del usuario"
+        value={userEmail}
+        onChangeText={setUserEmail}
+        keyboardType="email-address"
         autoCapitalize="none"
       />
 
@@ -86,7 +103,7 @@ const informe: React.FC = () => {
       <TouchableOpacity
         style={styles.informeButton}
         onPress={handleUserSearch}
-        disabled={userId === ""}
+        disabled={userEmail === ""}
       >
         <Text style={styles.buttonText}>Informe sobre Usuario</Text>
       </TouchableOpacity>
@@ -95,20 +112,56 @@ const informe: React.FC = () => {
       {userDetails && (
         <View style={styles.userDetailsContainer}>
           <Text style={styles.userDetailsTitle}>Detalles del Usuario:</Text>
-          <Text>Nombre: {userDetails.nombre}</Text>
-          <Text>Email: {userDetails.email}</Text>
-          <Text>Puntos: {userDetails.puntos}</Text>
-          {/* Añade cualquier otra información relevante del usuario */}
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Nombre:</Text>
+            <Text style={styles.detailValue}>{userDetails.nombre}</Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Email:</Text>
+            <Text style={styles.detailValue}>{userDetails.email}</Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Puntos:</Text>
+            <Text style={styles.detailValue}>{userDetails.puntos}</Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Fecha de Creación:</Text>
+            <Text style={styles.detailValue}>
+              {userDetails.createdAt ? formatDate(userDetails.createdAt) : "N/A"}
+            </Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Última Actividad:</Text>
+            <Text style={styles.detailValue}>
+              {userDetails.updatedAt ? formatDate(userDetails.updatedAt) : "N/A"}
+            </Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Recompensas Obtenidas:</Text>
+            <Text style={styles.detailValue}>
+              {userDetails.recompensasObtenidas?.length ?? 0}
+            </Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Amigos Registrados:</Text>
+            <Text style={styles.detailValue}>{userDetails.amigos?.length ?? 0}</Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Puntos de Reciclaje Escaneados:</Text>
+            <Text style={styles.detailValue}>
+              {userDetails.puntosReciclajeEscaneados?.length ?? 0}
+            </Text>
+          </View>
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 };
 
 // Estilos
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     padding: 20,
     justifyContent: "center",
     alignItems: "center",
@@ -158,8 +211,8 @@ const styles = StyleSheet.create({
   },
   userDetailsContainer: {
     marginTop: 30,
-    width: "80%",
-    padding: 15,
+    width: "90%",
+    padding: 20,
     borderRadius: 12,
     backgroundColor: "#FFFFFF",
     shadowColor: "#171717",
@@ -168,11 +221,26 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
   },
   userDetailsTitle: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "bold",
+    marginBottom: 20,
+    color: "#333333",
+    textAlign: "center",
+  },
+  detailItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 10,
+  },
+  detailLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#52734D",
+  },
+  detailValue: {
+    fontSize: 16,
     color: "#333333",
   },
 });
 
-export default informe;
+export default Informe;
