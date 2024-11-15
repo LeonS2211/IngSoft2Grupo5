@@ -117,7 +117,10 @@ const ProfileScreen: React.FC = () => {
           <FontAwesome5 name="cog" size={20} color="#9E9E9E" />
           <Text style={styles.optionText}>Configuración</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.optionItem}>
+        <TouchableOpacity
+          style={styles.optionItem}
+          onPress={() => router.push("/soporte")}
+        >
           <FontAwesome5 name="headset" size={20} color="#9E9E9E" />
           <Text style={styles.optionText}>Soporte</Text>
         </TouchableOpacity>
@@ -132,13 +135,12 @@ const ProfileScreen: React.FC = () => {
   );
 };
 
-// Estilos
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     alignItems: "center",
     backgroundColor: "#FAFAFA",
-    paddingBottom: 20,
+    paddingBottom: 50,
   },
   backButton: {
     position: "absolute",

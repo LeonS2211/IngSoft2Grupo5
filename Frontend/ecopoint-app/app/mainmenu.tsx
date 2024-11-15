@@ -103,6 +103,8 @@ const HomeScreen: React.FC = () => {
           )}
         </View>
 
+        
+
         {/* Barra de navegación inferior */}
         <BotBar />
       </View>

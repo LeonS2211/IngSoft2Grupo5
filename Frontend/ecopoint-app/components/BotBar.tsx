@@ -1,5 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import React from "react";
+import { router } from "expo-router";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { useRouter, usePathname } from "expo-router";
 
