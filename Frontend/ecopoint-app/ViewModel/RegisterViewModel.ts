@@ -56,6 +56,7 @@ const useRegisterViewModel = () => {
         codigoAmistad,
         nombre: email,
         msgSoporte: "", // Incluir msgSoporte en el nuevo usuario"",
+        msgResponseSoporte: "",
         puntosObjetivo: 0, // Asegurar que msgSoporte esté incluido
       };
 

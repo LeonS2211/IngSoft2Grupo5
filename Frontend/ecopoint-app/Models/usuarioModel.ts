@@ -20,7 +20,7 @@ export class Usuario implements IAutenticator, IPerfil {
     contraseña: string,
     numTelefono: number,
     puntajeUsuario: number,
-    codigoAmistad: string
+    codigoAmistad: string,
   ) {
     this.nombre = nombre;
     this.apellido = apellido;
@@ -37,7 +37,7 @@ export class Usuario implements IAutenticator, IPerfil {
     correoElectronico: string,
     contraseña: string,
     numTelefono: number = 0,
-    puntajeUsuario: number = 0
+    puntajeUsuario: number = 0,
   ): Usuario {
     if (!Usuario.instance) {
       const codigoAmistad = Usuario.generarCodigoAmistad();
@@ -48,7 +48,7 @@ export class Usuario implements IAutenticator, IPerfil {
         contraseña,
         numTelefono,
         puntajeUsuario,
-        codigoAmistad
+        codigoAmistad,
       );
     }
     return Usuario.instance;
@@ -70,7 +70,7 @@ export class Usuario implements IAutenticator, IPerfil {
   }
   public static reclamarRecompensa(
     puntajeUsuario: number,
-    puntosCapturadosUserAmigo: number
+    puntosCapturadosUserAmigo: number,
   ): {
     puntosCapturadosUser: number;
     puntosCapturadosUserAmigo: number;
