@@ -14,21 +14,48 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import useFeedbackViewModel from "../../ViewModel/MsgReponseViewModel";
 
 const FeedbackScreen = () => {
-  const { comment, maxCharacters, handleCommentChange, handleSendFeedback } =
-    useFeedbackViewModel();
+  const {
+    comment,
+    maxCharacters,
+    handleCommentChange,
+    handleSendFeedback,
+    fetchMsgSoporte,
+    fetchMsgResponseSoporte,
+  } = useFeedbackViewModel();
 
-  const [lastMessage, setLastMessage] = useState(null); // Store only the last message
+  const [messages, setMessages] = useState([]); // Store all messages
+  const [hasFetched, setHasFetched] = useState(false); // Prevent infinite fetching
 
   const handleSend = async () => {
     const success = await handleSendFeedback();
     if (success) {
-      setLastMessage({ text: comment, isUser: true }); // Update with the latest message
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { text: comment, isUser: true }, // Add sent message
+      ]);
     }
   };
 
   useEffect(() => {
-    // Initial setup if needed
-  }, []);
+    if (!hasFetched) {
+      const loadMessages = async () => {
+        const msgSoporte = await fetchMsgSoporte(); // Fetch incoming message
+        const msgResponseSoporte = await fetchMsgResponseSoporte(); // Fetch saved response
+
+        const loadedMessages = [];
+        if (msgSoporte) {
+          loadedMessages.push({ text: msgSoporte, isUser: false });
+        }
+        if (msgResponseSoporte) {
+          loadedMessages.push({ text: msgResponseSoporte, isUser: true });
+        }
+
+        setMessages(loadedMessages);
+      };
+      loadMessages();
+      setHasFetched(true);
+    }
+  }, [hasFetched, fetchMsgSoporte, fetchMsgResponseSoporte]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -42,17 +69,26 @@ const FeedbackScreen = () => {
         </View>
 
         <View style={styles.chatContainer}>
-          {lastMessage && (
+          {messages.map((message, index) => (
             <View
+              key={index}
               style={
-                lastMessage.isUser
+                message.isUser
                   ? [styles.messageBubble, styles.userBubble]
                   : [styles.messageBubble, styles.supportBubble]
               }
             >
-              <Text style={styles.messageText}>{lastMessage.text}</Text>
+              <Text
+                style={
+                  message.isUser
+                    ? styles.messageTextUser
+                    : styles.messageTextSupport
+                }
+              >
+                {message.text}
+              </Text>
             </View>
-          )}
+          ))}
         </View>
 
         <View style={styles.inputContainer}>
@@ -118,9 +154,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#E6E6E6",
     alignSelf: "flex-start",
   },
-  messageText: {
+  messageTextUser: {
     fontSize: 16,
     color: "white",
+  },
+  messageTextSupport: {
+    fontSize: 16,
+    color: "#333",
   },
   inputContainer: {
     flexDirection: "row",

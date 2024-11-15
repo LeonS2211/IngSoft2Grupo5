@@ -30,7 +30,6 @@ const useFeedbackViewModel = () => {
     }
   };
 
-  // Guardar el comentario en AsyncStorage
   const saveCommentToStorage = async (text) => {
     try {
       await AsyncStorage.setItem(COMMENT_KEY, text);
@@ -51,7 +50,7 @@ const useFeedbackViewModel = () => {
   const handleCommentChange = (text) => {
     if (text.length <= maxCharacters) {
       setComment(text);
-      saveCommentToStorage(text); // Guardar automáticamente el comentario
+      saveCommentToStorage(text);
     }
   };
 
@@ -70,14 +69,13 @@ const useFeedbackViewModel = () => {
         return false;
       }
 
-      // Actualizar msgSoporte del usuario con el comentario
       const response = await UsuariosApi.update({
         id: userId,
         msgResponseSoporte: comment,
       });
 
       if (response?.status === 200) {
-        alert("Respuesta enviada correctamente");
+        alert("Comentario enviado correctamente.");
         clearStoredComment();
         return true;
       } else {
@@ -92,6 +90,68 @@ const useFeedbackViewModel = () => {
     }
   };
 
+  const fetchMsgSoporte = async () => {
+    try {
+      const userId = await getUserId();
+      if (!userId) return null;
+
+      const response = await UsuariosApi.findOne(userId);
+      if (response?.status === 200) {
+        return response.data.msgSoporte || "";
+      } else {
+        console.error("Error al obtener el msgSoporte:", response?.data);
+        return null;
+      }
+    } catch (error) {
+      console.error("Error al obtener el msgSoporte:", error);
+      return null;
+    }
+  };
+
+  const fetchMsgResponseSoporte = async () => {
+    try {
+      const userId = await getUserId();
+      if (!userId) return null;
+
+      const response = await UsuariosApi.findOne(userId);
+      if (response?.status === 200) {
+        return response.data.msgResponseSoporte || "";
+      } else {
+        console.error(
+          "Error al obtener el msgResponseSoporte:",
+          response?.data
+        );
+        return null;
+      }
+    } catch (error) {
+      console.error("Error al obtener el msgResponseSoporte:", error);
+      return null;
+    }
+  };
+
+  const clearMsgResponseSoporte = async () => {
+    try {
+      const userId = await getUserId();
+      if (!userId) return;
+
+      const response = await UsuariosApi.update({
+        id: userId,
+        msgResponseSoporte: "", // Clear the msgResponseSoporte field
+      });
+
+      if (response?.status === 200) {
+        console.log("msgResponseSoporte limpiado correctamente.");
+      } else {
+        console.error(
+          "Error al limpiar el msgResponseSoporte:",
+          response?.data
+        );
+      }
+    } catch (error) {
+      console.error("Error al limpiar el msgResponseSoporte:", error);
+    }
+  };
+
   useEffect(() => {
     loadStoredComment();
   }, []);
@@ -101,6 +161,9 @@ const useFeedbackViewModel = () => {
     maxCharacters,
     handleCommentChange,
     handleSendFeedback,
+    fetchMsgSoporte,
+    fetchMsgResponseSoporte,
+    clearMsgResponseSoporte,
     clearStoredComment,
   };
 };
