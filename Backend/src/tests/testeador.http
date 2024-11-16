@@ -15,8 +15,9 @@ POST https://backgrupo5-production.up.railway.app/objetivo
 Content-Type: application/json
 
 {
-  "descripcion": "Recicla en 6 puntos de reciclaje esta semana", 
-  "numObjetivo": 6
+  "descripcion": "Recicla en 3 puntos de reciclaje", 
+  "numObjetivo": 3,
+  "puntosObtenibles": 300
 }
 ###
 POST https://backgrupo5-production.up.railway.app/ubicacion

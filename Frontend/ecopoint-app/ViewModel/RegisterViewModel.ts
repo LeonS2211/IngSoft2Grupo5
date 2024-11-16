@@ -69,7 +69,7 @@ const useRegisterViewModel = () => {
         return true; // Devuelve true si el registro fue exitoso
       } else {
         setErrorMessage(
-          response?.data?.message || "Hubo un error al registrar el usuario."
+          response?.data?.message || "Hubo un error al registrar el usuario.",
         );
         return false;
       }

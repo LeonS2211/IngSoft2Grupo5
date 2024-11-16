@@ -12,9 +12,6 @@ export function Main() {
       <TouchableOpacity
         style={styles.settingsIcon}
         onPress={() => {
-          
-
-
           // Redirige a la pantalla de login del administrador
           router.push("/loginAdministrador");
         }}

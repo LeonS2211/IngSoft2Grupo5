@@ -1,91 +1,130 @@
 import { useState, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import UsuarioRecompensa from "../api/usuarioRecompensa";
-import UsuarioObjetivo from "../api/usuarioObjetivo";
 import RecompensaApi from "../api/recompensa";
 import ObjetivoApi from "../api/objetivo";
+import UsuariosAmigoApi from "../api/usuarioAmigo";
+import UsuariosPuntoReciclajeApi from "../api/usuarioPuntoReciclaje";
+import UsuariosApi from "../api/usuario";
+import RecompensasUsuarioApi from "../api/usuarioRecompensa"; // Nueva API para registrar recompensas reclamadas
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const useRecompensasViewModel = () => {
   const [recompensas, setRecompensas] = useState([]);
   const [objetivos, setObjetivos] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [numeroAmigos, setNumeroAmigos] = useState(0);
+  const [puntosReciclajeVisitados, setPuntosReciclajeVisitados] = useState(0);
+  const [puntosUsuario, setPuntosUsuario] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const getUserId = async () => {
-    try {
-      const userId = await AsyncStorage.getItem("userId");
-      if (!userId) throw new Error("Usuario no autenticado");
-      return userId;
-    } catch (error) {
-      console.error("Error obteniendo el ID del usuario:", error);
-      setError("No se pudo obtener el usuario actual.");
-      return null;
-    }
-  };
-
-  const fetchRecompensas = async (userId) => {
-    try {
-      const response = await UsuarioRecompensa.findAll();
-      const userRewards = response?.data.filter(
-        (recompensa) => recompensa.idUsuario === parseInt(userId, 10)
-      );
-
-      const detailedRecompensas = await Promise.all(
-        userRewards.map(async (r) => {
-          const recompensaDetails = await RecompensaApi.findOne(r.idRecompensa);
-          return recompensaDetails?.data;
-        })
-      );
-
-      setRecompensas(detailedRecompensas);
-    } catch (error) {
-      console.error("Error cargando recompensas:", error);
-      setError("No se pudieron cargar las recompensas.");
-    }
-  };
-
-  const fetchObjetivos = async (userId) => {
-    try {
-      const response = await UsuarioObjetivo.findAll();
-      const userObjectives = response?.data.filter(
-        (objetivo) => objetivo.idUsuario === parseInt(userId, 10)
-      );
-
-      const detailedObjetivos = await Promise.all(
-        userObjectives.map(async (o) => {
-          const objetivoDetails = await ObjetivoApi.findOne(o.idObjetivo);
-          return { ...objetivoDetails?.data, progreso: o.progreso };
-        })
-      );
-
-      setObjetivos(detailedObjetivos);
-    } catch (error) {
-      console.error("Error cargando objetivos:", error);
-      setError("No se pudieron cargar los objetivos.");
-    }
-  };
-
-  const loadData = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const userId = await getUserId();
-      if (!userId) return;
-
-      await Promise.all([fetchRecompensas(userId), fetchObjetivos(userId)]);
-    } catch (error) {
-      console.error("Error al cargar datos:", error);
-      setError("Ocurrió un error al cargar los datos.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
-    loadData();
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+
+        const userId = await AsyncStorage.getItem("userId");
+        if (!userId) {
+          throw new Error("No se encontró el ID del usuario logueado.");
+        }
+
+        // Fetch recompensas y filtra las que ya fueron reclamadas
+        const recompensaResponse = await RecompensaApi.findAll();
+        const recompensasUsuarioResponse =
+          await RecompensasUsuarioApi.findAll();
+        const recompensasReclamadas = recompensasUsuarioResponse.data
+          .filter((registro) => registro.idUsuario === parseInt(userId, 10))
+          .map((registro) => registro.idRecompensa);
+
+        const recompensasDisponibles = recompensaResponse.data.filter(
+          (recompensa) => !recompensasReclamadas.includes(recompensa.id)
+        );
+
+        setRecompensas(recompensasDisponibles || []);
+
+        // Fetch objetivos
+        const objetivoResponse = await ObjetivoApi.findAll();
+        setObjetivos(objetivoResponse.data || []);
+
+        // Fetch numero de amigos
+        const amigosResponse = await UsuariosAmigoApi.findAll();
+        const amigos = amigosResponse.data || [];
+        const userAmigosCount = amigos.filter(
+          (amigo) => amigo.idUsuario === parseInt(userId, 10)
+        ).length;
+        setNumeroAmigos(userAmigosCount);
+
+        // Fetch puntos de reciclaje visitados
+        const puntosReciclajeResponse =
+          await UsuariosPuntoReciclajeApi.findAll();
+        const puntosReciclaje = puntosReciclajeResponse.data || [];
+        const userPuntosCount = puntosReciclaje.filter(
+          (punto) => punto.idUsuario === parseInt(userId, 10)
+        ).length;
+        setPuntosReciclajeVisitados(userPuntosCount);
+
+        // Fetch puntos del usuario desde la API
+        const usuarioResponse = await UsuariosApi.findOne(userId);
+        setPuntosUsuario(usuarioResponse.data.puntos || 0); // Actualiza los puntos
+      } catch (err) {
+        setError("Error al cargar datos");
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  return { recompensas, objetivos, isLoading, error };
+  const reclamarRecompensa = async (rewardId, puntosReq) => {
+    if (puntosUsuario >= puntosReq) {
+      const userId = await AsyncStorage.getItem("userId");
+      if (!userId) {
+        alert("No se pudo encontrar el ID del usuario.");
+        return;
+      }
+
+      try {
+        // Resta los puntos del usuario
+        const nuevosPuntos = puntosUsuario - puntosReq;
+        setPuntosUsuario(nuevosPuntos);
+
+        // Elimina la recompensa de la lista
+        setRecompensas((prevRecompensas) =>
+          prevRecompensas.filter((recompensa) => recompensa.id !== rewardId)
+        );
+
+        // Actualiza los puntos en la base de datos
+        await UsuariosApi.update({
+          id: parseInt(userId, 10),
+          puntos: nuevosPuntos,
+        });
+
+        // Registra la recompensa reclamada
+        await RecompensasUsuarioApi.create({
+          idUsuario: parseInt(userId, 10),
+          idRecompensa: rewardId,
+        });
+
+        alert("¡Recompensa reclamada con éxito!");
+      } catch (err) {
+        console.error("Error al reclamar la recompensa:", err);
+        alert("Hubo un error al reclamar la recompensa.");
+      }
+    } else {
+      alert("No tienes suficientes puntos para reclamar esta recompensa.");
+    }
+  };
+
+  return {
+    recompensas,
+    objetivos,
+    numeroAmigos,
+    puntosReciclajeVisitados,
+    puntosUsuario,
+    reclamarRecompensa,
+    isLoading,
+    error,
+  };
 };
 
 export default useRecompensasViewModel;
