@@ -93,7 +93,7 @@ export default function BotBar() {
         onPress={() => router.push("/ranking")}
       >
         <FontAwesome5
-          name="map"
+          name="trophy"
           size={24}
           color={isActive("/ranking") ? "green" : "gray"}
         />

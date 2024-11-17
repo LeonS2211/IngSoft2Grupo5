@@ -14,8 +14,8 @@ const Recompensa = sequelize.define('recompensas', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    descripcion: {
-        type: DataTypes.STRING,
+    puntosReq: {
+        type: DataTypes.INTEGER,
         allowNull: false
     }
 })

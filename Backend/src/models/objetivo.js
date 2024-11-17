@@ -2,7 +2,6 @@
 
 import { DataTypes } from "sequelize"
 import sequelize from '../config/database.js'
-import Recompensa from "./recompensa.js"
 
 const Objetivo = sequelize.define('objetivos', {
     id: {
@@ -11,23 +10,14 @@ const Objetivo = sequelize.define('objetivos', {
         autoIncrement: true,
         allowNull: false
     },
-    idRecompensa: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
     descripcion: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    numObjetivo: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     }
-})
-
-Recompensa.hasOne(Objetivo, {
-    foreignKey: 'idRecompensa',
-    targetId: 'id'
-})
-Objetivo.belongsTo(Recompensa, {
-    foreignKey: 'idRecompensa',
-    targetId: 'id'
 })
 
 export default Objetivo

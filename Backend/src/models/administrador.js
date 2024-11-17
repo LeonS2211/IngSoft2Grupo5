@@ -20,6 +20,9 @@ const Administrador = sequelize.define('administradores', {
     contraseña: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    msgSoporte: {
+        type: DataTypes.STRING,
     }
 })
 
