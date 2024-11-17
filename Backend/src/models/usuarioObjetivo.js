@@ -19,10 +19,6 @@ const UsuarioObjetivo = sequelize.define('usuarioObjetivos', {
     idObjetivo: {
         type: DataTypes.INTEGER,
         allowNull: false
-    },
-    progreso: {
-        type: DataTypes.FLOAT,
-        allowNull: false
     }
 })
 

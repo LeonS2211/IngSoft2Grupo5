@@ -17,6 +17,10 @@ const Objetivo = sequelize.define('objetivos', {
     numObjetivo: {
         type: DataTypes.INTEGER,
         allowNull: false
+    },
+    puntosObtenibles: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     }
 })
 
