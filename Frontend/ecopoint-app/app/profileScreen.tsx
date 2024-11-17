@@ -17,11 +17,25 @@ const { width } = Dimensions.get("window");
 
 const ProfileScreen: React.FC = () => {
   const router = useRouter();
-  const { email, isLoading, errorMessage, fetchEmail } = useProfileViewModel();
+  const { email, rango, isLoading, errorMessage, fetchUserProfile } =
+    useProfileViewModel();
 
   useEffect(() => {
-    fetchEmail(); // Llamamos a la función para obtener el correo al cargar la pantalla
+    fetchUserProfile();
   }, []);
+
+  const rangoImagenes: Record<string, any> = {
+    plata: require("../assets/plata.png"),
+    oro: require("../assets/oro.png"),
+    bronce: require("../assets/bronce.png"),
+  };
+
+  const profileImage =
+    rango && rangoImagenes[rango.toLowerCase()]
+      ? rangoImagenes[rango.toLowerCase()]
+      : {
+          uri: "https://img.icons8.com/ios-filled/50/000000/user-male-circle.png",
+        };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -33,9 +47,7 @@ const ProfileScreen: React.FC = () => {
       {/* Imagen de fondo detrás del perfil */}
       <View style={styles.headerBackground}>
         <Image
-          source={{
-            uri: "../assets/fondo.jpeg",
-          }}
+          source={require("../assets/fondo.jpeg")}
           style={styles.headerImage}
         />
       </View>
@@ -43,12 +55,7 @@ const ProfileScreen: React.FC = () => {
       {/* Imagen de perfil sobrepuesta */}
       <View style={styles.profileContainer}>
         <View style={styles.profilePicContainer}>
-          <Image
-            source={{
-              uri: "https://img.icons8.com/ios-filled/50/000000/user-male-circle.png",
-            }}
-            style={styles.profilePic}
-          />
+          <Image source={profileImage} style={styles.profilePic} />
         </View>
       </View>
 
@@ -58,9 +65,11 @@ const ProfileScreen: React.FC = () => {
         ) : errorMessage ? (
           <Text style={styles.statLabel}>{errorMessage}</Text>
         ) : (
-          <Text style={styles.name}>{email || "Cargando..."}</Text>
+          <>
+            <Text style={styles.name}>{email}</Text>
+            <Text style={styles.phone}>+51 915 131 135</Text>
+          </>
         )}
-        <Text style={styles.phone}>+51 915 131 135</Text>
       </View>
 
       {/* Botones de agregar amigos y mis amigos */}
@@ -75,7 +84,6 @@ const ProfileScreen: React.FC = () => {
           <Text style={styles.buttonText}>MIS AMIGOS</Text>
         </TouchableOpacity>
       </View>
-
       {/* Estadísticas */}
       <View style={styles.statsSection}>
         <Text style={styles.sectionTitle}>Estadísticas</Text>

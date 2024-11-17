@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   TextInput,
   ActivityIndicator,
-  Alert,
   ScrollView,
 } from "react-native";
 import useInformeViewModel from "../ViewModel/InformeViewModel";

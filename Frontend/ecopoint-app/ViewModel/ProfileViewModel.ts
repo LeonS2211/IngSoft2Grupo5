@@ -4,6 +4,7 @@ import UsuariosApi from "../api/usuario";
 
 const useProfileViewModel = () => {
   const [email, setEmail] = useState<string>("");
+  const [rango, setRango] = useState<string | null>(null); // Nuevo estado para el rango
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -23,8 +24,8 @@ const useProfileViewModel = () => {
     }
   };
 
-  // Función para obtener el email del usuario logueado
-  const fetchEmail = async () => {
+  // Función para obtener la información del usuario logueado (email y rango)
+  const fetchUserProfile = async () => {
     setIsLoading(true);
     setErrorMessage(null);
 
@@ -42,13 +43,16 @@ const useProfileViewModel = () => {
 
       if (response?.status === 200) {
         const usuario = response.data;
-        setEmail(usuario.email);
+        setEmail(usuario.email || "Correo no disponible");
+        setRango(usuario.rango || null); // Actualizamos el rango si está disponible
       } else {
-        setErrorMessage("Error al obtener el correo del usuario.");
+        setErrorMessage("Error al obtener los datos del usuario.");
       }
     } catch (error) {
       console.error(error);
-      setErrorMessage("Error en la solicitud al obtener el email.");
+      setErrorMessage(
+        "Error en la solicitud al obtener los datos del usuario.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -56,9 +60,10 @@ const useProfileViewModel = () => {
 
   return {
     email,
+    rango, // Devuelve el rango como parte del ViewModel
     isLoading,
     errorMessage,
-    fetchEmail,
+    fetchUserProfile, // Cambié el nombre para reflejar que obtiene más datos
   };
 };
 

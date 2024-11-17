@@ -1,24 +1,18 @@
-import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  TextInput,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import UsuariosApi from "../api/usuario"; // Importa la API de usuario
 
 const MainAdmin: React.FC = () => {
   const router = useRouter(); // Hook para la navegación
   const [adminName, setAdminName] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [userId, setUserId] = useState<string>("");
-  const [userDetails, setUserDetails] = useState<any | null>(null);
 
   // Obtener el nombre del administrador al cargar la pantalla
   useEffect(() => {
@@ -72,25 +66,6 @@ const MainAdmin: React.FC = () => {
       >
         <Text style={styles.buttonText}>Gestion de soporte</Text>
       </TouchableOpacity>
-
-      {/* Botón para los objetivos */}
-      <TouchableOpacity
-        style={styles.informeButton}
-        onPress={() => router.push("/objetivosAdmin")}
-      >
-        <Text style={styles.buttonText}>Agregar Objetivos</Text>
-      </TouchableOpacity>
-
-      {/* Mostrar los detalles del usuario si se encontraron */}
-      {userDetails && (
-        <View style={styles.userDetailsContainer}>
-          <Text style={styles.userDetailsTitle}>Detalles del Usuario:</Text>
-          <Text>Nombre: {userDetails.nombre}</Text>
-          <Text>Email: {userDetails.email}</Text>
-          <Text>Puntos: {userDetails.puntos}</Text>
-          {/* Añade cualquier otra información relevante del usuario */}
-        </View>
-      )}
     </View>
   );
 };

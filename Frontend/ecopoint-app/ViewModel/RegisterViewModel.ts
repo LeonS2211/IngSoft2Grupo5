@@ -59,6 +59,7 @@ const useRegisterViewModel = () => {
         msgSoporte: "", // Incluir msgSoporte en el nuevo usuario"",
         puntosObjetivo: 0,
         msgResponseSoporte: "",
+        rango: "",
       };
 
       const response = await UsuariosApi.create(newUser);

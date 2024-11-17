@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import UsuariosApi from "../api/usuario";
 import UsuariosAmigoApi from "../api/usuarioAmigo";
 import UsuariosPuntoReciclajeApi from "../api/usuarioPuntoReciclaje";
+import UsuarioRecompensasApi from "../api/usuarioRecompensa";
 
 const useInformeViewModel = () => {
   const [adminName, setAdminName] = useState(null);
@@ -55,6 +56,18 @@ const useInformeViewModel = () => {
               (punto) => punto.idUsuario === foundUser.id
             );
             setPuntosReciclaje(userPuntos);
+          }
+
+          // **Obtener recompensas obtenidas**
+          const recompensasResponse = await UsuarioRecompensasApi.findAll();
+          if (recompensasResponse && recompensasResponse.data) {
+            const userRecompensas = recompensasResponse.data.filter(
+              (recompensa) => recompensa.idUsuario === foundUser.id
+            );
+            setUserDetails((prevDetails) => ({
+              ...prevDetails,
+              recompensasObtenidas: userRecompensas,
+            }));
           }
         } else {
           alert("Usuario no encontrado");
