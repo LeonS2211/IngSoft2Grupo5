@@ -1,21 +1,50 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "expo-router"; // Uso de useRouter para la navegación
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Pressable,
+  Modal,
+} from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons"; // Para los iconos de navegación
-import MapView, { Callout, Marker } from "react-native-maps";
+import MapView, { Marker } from "react-native-maps";
 import BotBar from "../components/BotBar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Location from "expo-location";
 import useMapViewModel from "../ViewModel/MapViewModel";
-import { Link } from "expo-router";
+import MapViewDirections from "react-native-maps-directions";
+import { PuntoReciclaje } from "../Models/puntoReciclajeModel";
+import { GOOGLE_MAPS_KEY } from "@env";
+
+const RecBin = require("../assets/RecycleBin.png");
 
 const HomeScreen: React.FC = () => {
   const router = useRouter(); // Hook de router para la navegación
   const { puntos, isLoading, errorMessage } = useMapViewModel();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedPoint, setSelectedPoint] = useState<PuntoReciclaje | null>(
+    null,
+  );
+
+  const openModal = (punto: PuntoReciclaje) => {
+    setSelectedPoint(punto);
+    setModalVisible(true);
+  };
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedPoint(null);
+  };
   const [origin, setOrigin] = useState({
     latitude: -12.08511625487562,
     longitude: -76.97726574392497,
   });
+  const [destination, setDestination] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
   async function getLocationPermission() {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
@@ -83,25 +112,79 @@ const HomeScreen: React.FC = () => {
               {puntos.map((punto) => (
                 <Marker
                   key={punto.nombre}
+                  onPress={() => openModal(punto)}
                   coordinate={{
                     latitude: punto.getUbicacionCoords().latitud,
                     longitude: punto.getUbicacionCoords().longitud,
                   }}
                 >
-                  <Link asChild href={`/scannerQR/${punto.nombre}`}>
-                    <Callout>
-                      <View style={styles.marker}>
-                        <Text style={styles.markerText}>
-                          Ir a escanear el QR de {punto.nombre}
-                        </Text>
-                      </View>
-                    </Callout>
-                  </Link>
+                  <View>
+                    <Image source={RecBin} style={{ width: 30, height: 30 }} />
+                  </View>
                 </Marker>
               ))}
+              {destination && Object.keys(destination).length > 0 && (
+                <MapViewDirections
+                  origin={origin}
+                  destination={destination}
+                  apikey={GOOGLE_MAPS_KEY}
+                  strokeWidth={1}
+                  strokeColor="blue"
+                />
+              )}
             </MapView>
           )}
         </View>
+
+        {/* Modal for Callout content */}
+        <Modal
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={closeModal}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              {/* Close button in the top right corner */}
+              <Pressable style={styles.closeButton} onPress={closeModal}>
+                <Text style={styles.closeButtonText}>✕</Text>
+              </Pressable>
+              {selectedPoint && (
+                <>
+                  <Text style={styles.calloutTitle}>
+                    {selectedPoint.nombre}
+                  </Text>
+                  <View style={styles.buttonContainer}>
+                    <Pressable
+                      style={styles.button}
+                      onPress={() => {
+                        setDestination({
+                          latitude: selectedPoint.getUbicacionCoords().latitud,
+                          longitude:
+                            selectedPoint.getUbicacionCoords().longitud,
+                        });
+                        closeModal();
+                      }}
+                    >
+                      <Text style={styles.buttonText}>
+                        Ir hacia el punto de reciclaje
+                      </Text>
+                    </Pressable>
+                    <Pressable
+                      style={styles.button}
+                      onPress={() => {
+                        closeModal();
+                        setDestination(null);
+                        router.push(`/scannerQR/${selectedPoint.nombre}`);
+                      }}
+                    >
+                      <Text style={styles.buttonText}>Escanear QR</Text>
+                    </Pressable>
+                  </View>
+                </>
+              )}
+            </View>
+          </View>
+        </Modal>
 
         {/* Barra de navegación inferior */}
         <BotBar />
@@ -115,6 +198,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#E5F5E5",
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: 250,
+    padding: 20,
+    backgroundColor: "white",
+    borderRadius: 10,
+    alignItems: "center",
   },
   header: {
     padding: 20,
@@ -151,6 +247,16 @@ const styles = StyleSheet.create({
     color: "green",
     marginLeft: 5,
   },
+  closeButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    padding: 5,
+  },
+  closeButtonText: {
+    fontSize: 18,
+    color: "black",
+  },
   content: {
     flex: 1,
     justifyContent: "center",
@@ -177,8 +283,36 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingBottom: 0,
   },
-  marker: { padding: 10, alignItems: "center" },
-  markerText: { fontSize: 16, textAlign: "center", color: "#000" },
+  calloutContainer: {
+    width: 200, // Ajusta el ancho del Callout según prefieras
+    padding: 10,
+    backgroundColor: "white",
+    borderRadius: 8,
+  },
+  calloutTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+  button: {
+    flex: 1,
+    alignItems: "center",
+    padding: 10,
+    marginHorizontal: 5,
+    backgroundColor: "#4CAF50", // Color del botón
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 14,
+    textAlign: "center",
+  },
 });
 
 export default HomeScreen;

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import UsuariosApi from "../api/usuario"; // API para buscar amigos y usuario logueado
 import { Usuario } from "../Models/usuarioModel";
+import UsuarioAmigoApi from "../api/usuarioAmigo"; // API para marcar puntos de reciclaje visitados}
 
 const useFriendViewModel = () => {
   const [codigoAmistad, setCodigoAmistad] = useState<string>(""); // Estado para el código de amistad del usuario logueado
@@ -21,13 +22,52 @@ const useFriendViewModel = () => {
       const userId = await AsyncStorage.getItem("userId");
       if (!userId) {
         throw new Error(
-          "No se pudo encontrar el ID del usuario en AsyncStorage.",
+          "No se pudo encontrar el ID del usuario en AsyncStorage."
         );
       }
       return userId;
     } catch (error) {
       console.error("Error al obtener el userId del almacenamiento:", error);
       return null;
+    }
+  };
+
+  const amistad = async (idUsuario: number, idAmigo: number): Promise<void> => {
+    try {
+      // Obtener todos los registros de amigos
+      const allAmigosResponse = await UsuarioAmigoApi.findAll();
+
+      if (allAmigosResponse?.status === 200) {
+        // Filtrar para ver si ya existe una relación de amistad entre los usuarios
+        const existingAmigo = allAmigosResponse.data.find(
+          (amigo) => amigo.idUsuario === idUsuario && amigo.idAmigo === idAmigo
+        );
+
+        // Si ya existe un registro, no hacer nada
+        if (existingAmigo) {
+          console.log("El usuario ya tiene este amigo agregado.");
+          return;
+        }
+
+        // Crear el registro si no existe
+        const response = await UsuarioAmigoApi.create({
+          idUsuario: idUsuario,
+          idAmigo: idAmigo,
+        });
+
+        if (response?.status === 200 && response.data) {
+          console.log("Amigo agregado exitosamente.", response.data);
+        } else {
+          console.error(
+            "Error al agregar amigo. Respuesta inesperada:",
+            response?.data
+          );
+        }
+      } else {
+        console.error("Error al obtener la lista de amigos.");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud de agregar amigo:", error);
     }
   };
 
@@ -63,7 +103,6 @@ const useFriendViewModel = () => {
     }
   };
 
-  // Función para verificar si un código de amistad coincide con algún usuario
   const checkFriendCode = async (enteredCode: string) => {
     setIsLoading(true);
     setErrorMessage(null);
@@ -78,6 +117,7 @@ const useFriendViewModel = () => {
           const updatedFriends = [...friends, foundUser.email];
           setFriends(updatedFriends);
           setUsedCodes((prevCodes) => [...prevCodes, enteredCode]); // Agregar el código a los usados
+          await amistad(parseInt((await getUserId()) || ""), foundUser.id);
         } else {
           setErrorMessage(
             "No se encontró ningún usuario con ese código de amistad.",
@@ -159,7 +199,6 @@ const useFriendViewModel = () => {
           id: usuarioLogueado.id,
           puntos: nuevosPuntosUser, // Sumar 20 puntos al usuario logueado
         });
-
         // Actualizar puntos del amigo
         const updateAmigo = await UsuariosApi.update({
           id: amigo.id,

@@ -65,7 +65,9 @@ export class Usuario implements IAutenticator, IPerfil {
   public getPuntajeUsuario(): number {
     return this.puntajeUsuario;
   }
-
+  public get Nombre(): string {
+    return this.nombre;
+  }
   public static reclamarRecompensa(
     puntajeUsuario: number,
     puntosCapturadosUserAmigo: number,

@@ -17,6 +17,7 @@ export default function ScannerSuccess() {
   useEffect(() => {
     fetchUserPuntaje();
     sumarPuntosUsuario(1000); // Obtener el puntaje del usuario al cargar la vista
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -28,6 +28,7 @@ export default function ScannerQR() {
   useEffect(() => {
     fetchCodes(); // Obtener los códigos QR al cargar la vista
     fetchUserLocation(); // Obtener la ubicación del usuario al cargar la vista
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleBarCodeScanned = async ({

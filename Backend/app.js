@@ -12,6 +12,7 @@ import administradoresRoutes from './src/routes/administrador.js'
 import objetivosRoutes from './src/routes/objetivo.js'
 import recompensasRoutes from './src/routes/recompensa.js'
 import usuarioObjetivosRoutes from './src/routes/usuarioObjetivo.js'
+import usuarioRecompensasRoutes from './src/routes/usuarioRecompensa.js'
 
 let app = express();
 app.use(bodyParser.json());
@@ -31,5 +32,6 @@ app.use("/administrador", administradoresRoutes);
 app.use("/objetivo", objetivosRoutes);
 app.use("/recompensa", recompensasRoutes);
 app.use("/usuarioObjetivo", usuarioObjetivosRoutes);
+app.use("/usuarioRecompensa", usuarioRecompensasRoutes);
 
 export default app

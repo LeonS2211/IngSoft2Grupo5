@@ -1,4 +1,3 @@
-import RecompensaRepository from "../repository/recompensaRepository.js";
 import ObjetivoRepository from "../repository/objetivoRepository.js";
 
 const findAll = async (req, res) => {
@@ -16,14 +15,7 @@ const findOne = async (req, res) => {
 
 const create = async (req, res) => {
 
-    const idRecompensa = req.body.idRecompensa;
-
-    const Recompensa = await RecompensaRepository.findOne(idRecompensa) ?? null;
-
-    let result = null;
-
-    if (Recompensa)
-        result = await ObjetivoRepository.create(req.body);
+    const result = await ObjetivoRepository.create(req.body);
 
     return sendResponse(result, res);
 }

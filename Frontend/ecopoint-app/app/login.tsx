@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,8 @@ import {
 } from "react-native";
 import { Link, useRouter } from "expo-router"; // Importa useRouter para la navegación
 import useLoginViewModel from "../ViewModel/LoginViewModel"; // ViewModel
+import { useIsFocused } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen: React.FC = () => {
   const router = useRouter(); // Hook para la navegación
@@ -27,6 +29,22 @@ const LoginScreen: React.FC = () => {
 
   const [showPassword, setShowPassword] = useState(false); // Estado para controlar la visibilidad de la contraseña
 
+  const isFocused = useIsFocused(); // Detecta si la pantalla está enfocada
+
+  useEffect(() => {
+    const clearStorage = async () => {
+      try {
+        await AsyncStorage.clear();
+        console.log("AsyncStorage borrado con éxito.");
+      } catch (error) {
+        console.error("Error al borrar AsyncStorage:", error);
+      }
+    };
+
+    if (isFocused) {
+      clearStorage(); // Borra el almacenamiento cuando la pantalla se enfoca
+    }
+  }, [isFocused]); // Ejecuta este efecto cada vez que cambia `isFocused
   // Expresión regular para validar dominios de correo específicos
   const emailRegex = /^[^\s@]+@(gmail\.com|hotmail\.com|icloud\.com)$/;
 

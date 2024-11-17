@@ -1,9 +1,8 @@
 import Recompensa from '../models/recompensa.js';
-import Objetivo from '../models/objetivo.js';
 
 const findAll = async () => {
     try {
-        const result = await Recompensa.findAll({include: Objetivo});
+        const result = await Recompensa.findAll();
         console.log(result)
         return result;
 
