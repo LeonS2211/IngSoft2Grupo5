@@ -4,8 +4,6 @@ const endpoint = "/usuario";
 
 // Crear nuevo usuario
 const create = async (request) => {
-  // Validamos que puntos no sea null y le asignamos un valor predeterminado
-  request.puntos = request.puntos ?? 0;
   return await Base.post(endpoint, request);
 };
 
@@ -22,8 +20,6 @@ const findOne = async (id) => {
 
 // Actualizar un usuario
 const update = async (request) => {
-  // Validamos que puntos no sea null antes de actualizar
-  request.puntos = request.puntos ?? 0;
   return await Base.put(endpoint, request);
 };
 

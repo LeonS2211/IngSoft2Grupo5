@@ -120,7 +120,7 @@ const useFriendViewModel = () => {
           await amistad(parseInt((await getUserId()) || ""), foundUser.id);
         } else {
           setErrorMessage(
-            "No se encontró ningún usuario con ese código de amistad."
+            "No se encontró ningún usuario con ese código de amistad.",
           );
         }
       } else {
@@ -155,12 +155,12 @@ const useFriendViewModel = () => {
         "correo@ejemplo.com", // Sustituir por el correo real
         "contraseñaSegura", // Sustituir por la contraseña real
         123456789, // Sustituir por el número real
-        0 // Puntaje inicial
+        0, // Puntaje inicial
       );
 
       // Obtener información del usuario logueado
       const responseUsuarioLogueado = await UsuariosApi.findOne(
-        parseInt(userId, 10)
+        parseInt(userId, 10),
       );
       if (responseUsuarioLogueado?.status === 200) {
         const usuarioLogueado = responseUsuarioLogueado.data;
@@ -179,10 +179,10 @@ const useFriendViewModel = () => {
         const puntosCapturadosUserAmigo = amigo.puntos || 0;
 
         console.log(
-          `Puntos capturados de usuario logueado: ${puntosCapturadosUser}`
+          `Puntos capturados de usuario logueado: ${puntosCapturadosUser}`,
         );
         console.log(
-          `Puntos capturados de usuario amigo: ${puntosCapturadosUserAmigo}`
+          `Puntos capturados de usuario amigo: ${puntosCapturadosUserAmigo}`,
         );
 
         // Llama a la función reclamarRecompensa para sumar puntos
@@ -191,7 +191,7 @@ const useFriendViewModel = () => {
           puntosCapturadosUserAmigo: nuevosPuntosAmigo,
         } = Usuario.reclamarRecompensa(
           puntosCapturadosUser,
-          puntosCapturadosUserAmigo
+          puntosCapturadosUserAmigo,
         );
 
         // Actualizar puntos del usuario logueado

@@ -1,4 +1,4 @@
-GET https://backgrupo5-production.up.railway.app/codigoQR
+GET https://backgrupo5-production.up.railway.app/puntoReciclaje
 ########
 
 
@@ -17,29 +17,38 @@ Content-Type: application/json
 
 
 ###
+POST https://backgrupo5-production.up.railway.app/objetivo
+Content-Type: application/json
+
+{
+  "descripcion": "Recicla en 3 puntos de reciclaje", 
+  "numObjetivo": 3,
+  "puntosObtenibles": 300
+}
+###
 POST https://backgrupo5-production.up.railway.app/ubicacion
 Content-Type: application/json
 
 {
-  "latitud": -12.085409324443193, 
-  "longitud": -76.97118773315323 
+  "latitud": 37.42197690113764, 
+  "longitud": -122.08396590792049
 }
 ###
 POST https://backgrupo5-production.up.railway.app/codigoQR
 Content-Type: application/json
 
 {
-  "contenido": "ecopoint2"
+  "contenido": "ecopoint3"
 }
 ###
 POST https://backgrupo5-production.up.railway.app/puntoReciclaje
 Content-Type: application/json
 
 {
- "idUbicacion": 2,
- "idCodigoQR": 2,
- "nombre": "Universidad de Lima", 
- "descripcion": "cerca del edificio x, contenedor blanco"
+ "idUbicacion": 3,
+ "idCodigoQR": 3,
+ "nombre": "GooglePlexPruebas", 
+ "descripcion": "cerca de B40 y B43"
 }
 ###
 POST https://backgrupo5-production.up.railway.app/usuarioPuntoReciclaje

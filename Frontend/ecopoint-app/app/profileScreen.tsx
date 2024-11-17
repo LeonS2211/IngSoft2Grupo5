@@ -19,17 +19,31 @@ const ProfileScreen: React.FC = () => {
   const router = useRouter();
   const {
     email,
+    rango,
     puntos,
     rankingPosition,
     isLoading,
     errorMessage,
-    fetchEmail,
+    fetchUserProfile,
     logout,
   } = useProfileViewModel();
 
   useEffect(() => {
-    fetchEmail();
+    fetchUserProfile();
   }, []);
+
+  const rangoImagenes: Record<string, any> = {
+    plata: require("../assets/plata.png"),
+    oro: require("../assets/oro.png"),
+    bronce: require("../assets/bronce.png"),
+  };
+
+  const profileImage =
+    rango && rangoImagenes[rango.toLowerCase()]
+      ? rangoImagenes[rango.toLowerCase()]
+      : {
+          uri: "https://img.icons8.com/ios-filled/50/000000/user-male-circle.png",
+        };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -46,12 +60,7 @@ const ProfileScreen: React.FC = () => {
 
       <View style={styles.profileContainer}>
         <View style={styles.profilePicContainer}>
-          <Image
-            source={{
-              uri: "https://img.icons8.com/ios-filled/50/000000/user-male-circle.png",
-            }}
-            style={styles.profilePic}
-          />
+          <Image source={profileImage} style={styles.profilePic} />
         </View>
       </View>
 
@@ -61,7 +70,10 @@ const ProfileScreen: React.FC = () => {
         ) : errorMessage ? (
           <Text style={styles.statLabel}>{errorMessage}</Text>
         ) : (
-          <Text style={styles.name}>{email || "Cargando..."}</Text>
+          <>
+            <Text style={styles.name}>{email}</Text>
+            <Text style={styles.phone}>+51 915 131 135</Text>
+          </>
         )}
       </View>
 
@@ -76,7 +88,7 @@ const ProfileScreen: React.FC = () => {
           <Text style={styles.buttonText}>MIS AMIGOS</Text>
         </TouchableOpacity>
       </View>
-
+      {/* Estadísticas */}
       <View style={styles.statsSection}>
         <Text style={styles.sectionTitle}>Estadísticas</Text>
         <View style={styles.statsContainer}>
@@ -125,7 +137,10 @@ const ProfileScreen: React.FC = () => {
           <FontAwesome5 name="cog" size={20} color="#9E9E9E" />
           <Text style={styles.optionText}>Configuración</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.optionItem}>
+        <TouchableOpacity
+          style={styles.optionItem}
+          onPress={() => router.push("/soporte")}
+        >
           <FontAwesome5 name="headset" size={20} color="#9E9E9E" />
           <Text style={styles.optionText}>Soporte</Text>
         </TouchableOpacity>
@@ -145,13 +160,12 @@ const ProfileScreen: React.FC = () => {
   );
 };
 
-// Estilos
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     alignItems: "center",
     backgroundColor: "#FAFAFA",
-    paddingBottom: 20,
+    paddingBottom: 50,
   },
   backButton: {
     position: "absolute",

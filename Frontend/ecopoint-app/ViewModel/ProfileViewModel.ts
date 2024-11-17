@@ -5,6 +5,7 @@ import { Alert } from "react-native";
 
 const useProfileViewModel = () => {
   const [email, setEmail] = useState<string>("");
+  const [rango, setRango] = useState<string | null>(null); // Nuevo estado para el rango
   const [puntos, setPuntos] = useState<number | null>(null);
   const [rankingPosition, setRankingPosition] = useState<number | null>(null); // Nueva variable para el ranking
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -25,7 +26,8 @@ const useProfileViewModel = () => {
     }
   };
 
-  const fetchEmail = async () => {
+  // Función para obtener la información del usuario logueado (email y rango)
+  const fetchUserProfile = async () => {
     setIsLoading(true);
     setErrorMessage(null);
 
@@ -44,13 +46,16 @@ const useProfileViewModel = () => {
         const usuario = response.data;
         setEmail(usuario.nombre);
         setPuntos(usuario.puntos);
+        setRango(usuario.rango || null); // Actualizamos el rango si está disponible
         await calculateRankingPosition(usuario.puntos); // Calcula la posición en el ranking
       } else {
-        setErrorMessage("Error al obtener el nombre del usuario.");
+        setErrorMessage("Error al obtener los datos del usuario.");
       }
     } catch (error) {
       console.error(error);
-      setErrorMessage("Error en la solicitud al obtener el email.");
+      setErrorMessage(
+        "Error en la solicitud al obtener los datos del usuario.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -95,11 +100,12 @@ const useProfileViewModel = () => {
 
   return {
     email,
+    rango, // Devuelve el rango como parte del ViewModel
+    fetchUserProfile, // Cambié el nombre para reflejar que obtiene más datos
     puntos,
     rankingPosition,
     isLoading,
     errorMessage,
-    fetchEmail,
     logout,
   };
 };

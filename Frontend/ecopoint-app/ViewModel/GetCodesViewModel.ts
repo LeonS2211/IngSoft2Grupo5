@@ -36,7 +36,7 @@ const useGetCodesModel = () => {
       const userId = await AsyncStorage.getItem("userId");
       if (!userId) {
         throw new Error(
-          "No se pudo encontrar el ID del usuario en AsyncStorage."
+          "No se pudo encontrar el ID del usuario en AsyncStorage.",
         );
       }
       return userId;
@@ -51,7 +51,7 @@ const useGetCodesModel = () => {
     lat1: number,
     lon1: number,
     lat2: number,
-    lon2: number
+    lon2: number,
   ): number => {
     const R = 6371; // Radio de la Tierra en km
     const dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -96,7 +96,7 @@ const useGetCodesModel = () => {
 
     // Buscar el código escaneado en la lista de códigos
     const codigoEncontrado = codigos.find(
-      (codigo) => codigo.contenido === data
+      (codigo) => codigo.contenido === data,
     );
 
     if (!codigoEncontrado || !codigoEncontrado.puntoReciclaje) {
@@ -106,12 +106,12 @@ const useGetCodesModel = () => {
     try {
       // Obtener la ubicación del punto de reciclaje usando `idUbicacion`
       const ubicacionResponse = await UbicacionesApi.findOne(
-        codigoEncontrado.puntoReciclaje.idUbicacion
+        codigoEncontrado.puntoReciclaje.idUbicacion,
       );
 
       if (ubicacionResponse?.status !== 200 || !ubicacionResponse.data) {
         setErrorMessage(
-          "Error al obtener la ubicación del punto de reciclaje."
+          "Error al obtener la ubicación del punto de reciclaje.",
         );
         return false;
       }
@@ -123,11 +123,11 @@ const useGetCodesModel = () => {
         userLocation.latitude,
         userLocation.longitude,
         ubicacion.latitud,
-        ubicacion.longitud
+        ubicacion.longitud,
       );
 
       // Verificar si la distancia es menor o igual a 2 metros
-      if (distancia <= 0.01) {
+      if (distancia <= 0.1) {
         const userIdP = await getUserId();
         if (userIdP === null) {
           throw new Error("userIdP no debería ser null");
@@ -141,7 +141,7 @@ const useGetCodesModel = () => {
     } catch (error: any) {
       console.error(
         "Error al obtener la ubicación del punto de reciclaje:",
-        error
+        error,
       );
       setErrorMessage("Error en la solicitud al obtener la ubicación.");
       return false;
@@ -150,7 +150,7 @@ const useGetCodesModel = () => {
 
   const visitedPR = async (
     idUsuario: number,
-    idPuntoReciclaje: number
+    idPuntoReciclaje: number,
   ): Promise<void> => {
     try {
       // Obtener todos los registros de visitas
@@ -160,7 +160,7 @@ const useGetCodesModel = () => {
       const existingVisit = allVisits?.data.find(
         (visit) =>
           visit.idUsuario === idUsuario &&
-          visit.idPuntoReciclaje === idPuntoReciclaje
+          visit.idPuntoReciclaje === idPuntoReciclaje,
       );
 
       // Si ya existe un registro, no hacer nada
@@ -183,7 +183,7 @@ const useGetCodesModel = () => {
     } catch (error) {
       console.error(
         "Error en la solicitud al marcar el punto de reciclaje:",
-        error
+        error,
       );
     }
   };
