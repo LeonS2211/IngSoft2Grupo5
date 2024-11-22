@@ -60,6 +60,7 @@ const useRegisterViewModel = () => {
         puntosObjetivo: 0,
         msgResponseSoporte: "",
         rango: "",
+        tokenUsuario: "",
       };
 
       const response = await UsuariosApi.create(newUser);
