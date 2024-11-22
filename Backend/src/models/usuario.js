@@ -46,6 +46,10 @@ const Usuario = sequelize.define('usuarios', {
     rango: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    tokenUsuario: {
+        type: DataTypes.STRING,
+        allowNull: false
     }
 })
 

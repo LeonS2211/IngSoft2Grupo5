@@ -13,6 +13,10 @@ import objetivosRoutes from './src/routes/objetivo.js'
 import recompensasRoutes from './src/routes/recompensa.js'
 import usuarioObjetivosRoutes from './src/routes/usuarioObjetivo.js'
 import usuarioRecompensasRoutes from './src/routes/usuarioRecompensa.js'
+import comunidadesRoutes from './src/routes/comunidad.js'
+import sugerenciaPuntoReciclajesRoutes from './src/routes/sugerenciaPuntoReciclaje.js';
+import usuarioComunidadesRoutes from './src/routes/usuarioComunidad.js';
+import comentarioComunidadesRoutes from './src/routes/comentarioComunidad.js'
 
 let app = express();
 app.use(bodyParser.json());
@@ -33,5 +37,9 @@ app.use("/objetivo", objetivosRoutes);
 app.use("/recompensa", recompensasRoutes);
 app.use("/usuarioObjetivo", usuarioObjetivosRoutes);
 app.use("/usuarioRecompensa", usuarioRecompensasRoutes);
+app.use("/comunidad", comunidadesRoutes);
+app.use("/sugerenciaPuntoReciclaje", sugerenciaPuntoReciclajesRoutes);
+app.use("/usuarioComunidad", usuarioComunidadesRoutes);
+app.use("/comentarioComunidad", comentarioComunidadesRoutes);
 
 export default app
