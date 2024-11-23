@@ -66,6 +66,14 @@ const MainAdmin: React.FC = () => {
       >
         <Text style={styles.buttonText}>Gestion de soporte</Text>
       </TouchableOpacity>
+
+      {/* Botón para agregar un punto de reciclaje*/}
+      <TouchableOpacity
+        style={styles.informeButton}
+        onPress={() => router.push("/crearPR")}
+      >
+        <Text style={styles.buttonText}>Crear punto de reciclaje</Text>
+      </TouchableOpacity>
     </View>
   );
 };
