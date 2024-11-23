@@ -14,7 +14,7 @@ const useMapViewModel = () => {
     try {
       const response = await PuntosReciclajeApi.findAll(); // Usamos la API para obtener todos los puntos de reciclaje
 
-      const puntosReciclaje: PuntoReciclaje[] = response.data.map(
+      const puntosReciclaje: PuntoReciclaje[] = response?.data.map(
         (punto: any) => {
           const ubicacion = new Ubicacion(
             punto.ubicacione.latitud,
