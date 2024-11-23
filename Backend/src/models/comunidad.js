@@ -13,6 +13,10 @@ const Comunidad = sequelize.define('comunidades', {
     nombreComunidad: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    descripcionComunidad: {
+        type: DataTypes.STRING,
+        allowNull: false
     }
 })
 
