@@ -1,72 +1,118 @@
-import { useState, useEffect } from "react";
-import { SugerenciaPuntoReciclaje } from "../Models/SugerenciarReciclaje";
-import UsuariosPuntoReciclajeApi from "../api/usuarioPuntoReciclaje";
+import { useState } from "react";
+import UbicacionesApi from "../api/ubicacion";
+import SugerenciaPuntoReciclajeApi from "../api/sugerenciaPuntoReciclaje";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { FA5Style } from "@expo/vector-icons/build/FontAwesome5";
 
-export const useSugerenciaViewModel = () => {
-  const [sugerencias, setSugerencias] = useState<SugerenciaPuntoReciclaje[]>(
-    []
-  );
-  const [isLoading, setIsLoading] = useState(false);
+const useSugerenciaViewModel = () => {
+  const [descripcion, setDescripcion] = useState<string>("");
+  const [latitud, setLatitud] = useState<string>("");
+  const [longitud, setLongitud] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const cargarSugerencias = async () => {
-    setIsLoading(true);
+  const resetFields = () => {
+    setDescripcion("");
+    setLatitud("");
+    setLongitud("");
     setErrorMessage(null);
+  };
+  const getUserId = async () => {
     try {
-      const response = await UsuariosPuntoReciclajeApi.findAll();
-      if (response?.data) {
-        setSugerencias(response.data);
-      } else {
-        throw new Error("No se recibió una respuesta válida del servidor.");
+      const userId = await AsyncStorage.getItem("userId");
+      if (!userId) {
+        throw new Error(
+          "No se pudo encontrar el ID del usuario en AsyncStorage."
+        );
       }
-    } catch (error: any) {
-      console.error("Error al cargar las sugerencias:", error);
-      setErrorMessage(
-        error.response?.data?.message || "Error al cargar las sugerencias."
+      return userId;
+    } catch (error) {
+      console.error("Error al obtener el userId del almacenamiento:", error);
+      return null;
+    }
+  };
+  // Función para validar campos antes de crear
+  const validarCampos = async (): Promise<boolean> => {
+    setErrorMessage(null); // Reinicia el mensaje de error
+
+    try {
+      // Validar ubicación
+      const ubicacionesResponse = await UbicacionesApi.findAll();
+      const ubicaciones = ubicacionesResponse?.data || [];
+      const ubicacionDuplicada = ubicaciones.some(
+        (ubicacion: any) =>
+          parseFloat(ubicacion.latitud) === parseFloat(latitud) &&
+          parseFloat(ubicacion.longitud) === parseFloat(longitud)
       );
+
+      if (ubicacionDuplicada) {
+        setErrorMessage("La ubicación ya existe.");
+        return false;
+      }
+
+      // Si no hay errores, retorna true
+      return true;
+    } catch (error) {
+      console.error("Error al validar los campos:", error);
+      setErrorMessage("Error al validar los datos. Intente nuevamente.");
+      return false;
+    }
+  };
+
+  const createSugerencia = async (): Promise<boolean> => {
+    setIsLoading(true);
+    try {
+      const userId = await getUserId();
+
+      if (!userId) {
+        console.error("No se pudo obtener el ID del usuario.");
+        return false;
+      }
+      const validacionExitosa = await validarCampos();
+      if (!validacionExitosa) {
+        return false;
+      }
+      console.log("ubicacionPropuestaLatitud :", parseFloat(latitud));
+      console.log("ubicacionPropuestaLongitud ", parseFloat(longitud));
+      console.log("descripcion:", descripcion);
+      console.log("idUsuario: ", parseInt(userId, 10));
+
+      // Crear ubicación
+      const sugerenciaResponse = await SugerenciaPuntoReciclajeApi.create({
+        ubicacionPropuestaLatitud: parseFloat(latitud),
+        ubicacionPropuestaLongitud: parseFloat(longitud),
+        descripcion: descripcion,
+        idUsuario: parseInt(userId, 10),
+      });
+
+      if (sugerenciaResponse?.status === 200) {
+        resetFields();
+        return true;
+      } else {
+        throw new Error("Error al enviar la sugerencia de punto de reciclaje.");
+      }
+    } catch (error) {
+      console.error("Error al enviar sugerencia de punto de reciclaje:", error);
+      setErrorMessage(
+        "Error inesperado al enviar sugerencia de punto de reciclaje."
+      );
+      return false;
     } finally {
       setIsLoading(false);
     }
   };
 
-  const agregarSugerencia = async (
-    idUsuario: number,
-    latitud: number,
-    longitud: number,
-    descripcion: string
-  ) => {
-    try {
-      const nuevaSugerencia = new SugerenciaPuntoReciclaje(
-        latitud,
-        longitud,
-        descripcion,
-        idUsuario
-      );
-      nuevaSugerencia.validarDatos();
-      const response = await UsuariosPuntoReciclajeApi.create(nuevaSugerencia);
-
-      if (response?.data) {
-        setSugerencias((prev) => [...prev, response.data]);
-      } else {
-        throw new Error("No se pudo agregar la sugerencia.");
-      }
-    } catch (error: any) {
-      console.error("Error al agregar la sugerencia:", error);
-      setErrorMessage(
-        error.response?.data?.message || "Error al agregar la sugerencia."
-      );
-    }
-  };
-
-  useEffect(() => {
-    cargarSugerencias();
-  }, []);
-
   return {
-    sugerencias,
+    descripcion,
+    latitud,
+    longitud,
     isLoading,
     errorMessage,
-    cargarSugerencias,
-    agregarSugerencia,
+    setDescripcion,
+    setLatitud,
+    setLongitud,
+    createSugerencia,
   };
 };
+
+export default useSugerenciaViewModel;
