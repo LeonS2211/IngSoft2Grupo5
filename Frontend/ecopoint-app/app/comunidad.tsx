@@ -1,39 +1,82 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
   StyleSheet,
   Image,
-  TouchableOpacity,
+  TouchableWithoutFeedback,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import useComunidadViewModel from "../ViewModel/ComunidadesUserViewModel";
 
 const ComunidadesView = () => {
-  const comunidades = [
-    { id: "1", nombre: "Ingenierías", descripcion: "Descripción de comunidad" },
-    { id: "2", nombre: "Derecho", descripcion: "Descripción de comunidad" },
-    { id: "3", nombre: "Marketing", descripcion: "Descripción de comunidad" },
-    {
-      id: "4",
-      nombre: "Arquitectura",
-      descripcion: "Descripción de comunidad",
-    },
-    { id: "5", nombre: "Psicología", descripcion: "Descripción de comunidad" },
-  ];
+  const router = useRouter();
+
+  const {
+    comunidades,
+    isLoading,
+    errorMessage,
+    fetchComunidades,
+    highlightCommunity,
+  } = useComunidadViewModel();
+
+  // Fetch communities when the component mounts
+  useEffect(() => {
+    fetchComunidades();
+  }, []);
+
+  const handleHighlightCommunity = (comunidadId: string) => {
+    highlightCommunity(comunidadId); // Function to handle star click
+  };
 
   const renderItem = ({ item }: any) => (
     <View style={styles.card}>
-      <View style={styles.cardContent}>
-        <Text style={styles.cardTitle}>{item.nombre}</Text>
-        <Text style={styles.cardDescription}>{item.descripcion}</Text>
-        <Text style={styles.cardFavorites}>n° favoritos</Text>
-      </View>
-      <TouchableOpacity>
-        <FontAwesome5 name="star" size={24} color="#FFD700" />
-      </TouchableOpacity>
+      <TouchableWithoutFeedback
+        onPress={() => router.push(`/comunidadDetalle/${item.id}`)}
+      >
+        <View style={styles.cardContent}>
+          <Text style={styles.cardTitle}>{item.nombreComunidad}</Text>
+          <Text style={styles.cardDescription}>
+            {item.descripcionComunidad}
+          </Text>
+        </View>
+      </TouchableWithoutFeedback>
+      <TouchableWithoutFeedback
+        onPress={() => handleHighlightCommunity(item.id)}
+      >
+        <FontAwesome5
+          name="star"
+          size={24}
+          color={item.isHighlighted ? "#FFD700" : "#C0C0C0"} // Gold if highlighted, gray otherwise
+        />
+      </TouchableWithoutFeedback>
     </View>
   );
+
+  if (isLoading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#4CAF50" />
+        <Text style={styles.loaderText}>Cargando comunidades...</Text>
+      </View>
+    );
+  }
+
+  if (errorMessage) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{errorMessage}</Text>
+        <TouchableWithoutFeedback onPress={fetchComunidades}>
+          <View style={styles.retryButton}>
+            <Text style={styles.retryButtonText}>Reintentar</Text>
+          </View>
+        </TouchableWithoutFeedback>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -41,14 +84,14 @@ const ComunidadesView = () => {
         <Text style={styles.title}>Comunidades</Text>
         <Image
           source={{
-            uri: "https://placehold.co/50x50", // Cambia esto a la imagen del perfil real si tienes la URL
+            uri: "https://placehold.co/50x50",
           }}
           style={styles.profilePic}
         />
       </View>
       <FlatList
         data={comunidades}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
         contentContainerStyle={styles.list}
       />
@@ -72,7 +115,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "bold",
     color: "#357A38",
   },
@@ -115,9 +158,36 @@ const styles = StyleSheet.create({
     color: "#757575",
     marginBottom: 5,
   },
-  cardFavorites: {
-    fontSize: 12,
-    color: "#999999",
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loaderText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#757575",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    textAlign: "center",
+    color: "#FF5252",
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  retryButton: {
+    backgroundColor: "#4CAF50",
+    padding: 10,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 
