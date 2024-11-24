@@ -3,10 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  Image,
   TouchableWithoutFeedback,
   FlatList,
   ActivityIndicator,
+  TextInput,
+  TouchableOpacity,
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -21,21 +22,19 @@ const ComunidadesView = () => {
     errorMessage,
     fetchComunidades,
     highlightCommunity,
+    filterComunidades,
+    searchQuery,
+    setSearchQuery,
   } = useComunidadViewModel();
 
-  // Fetch communities when the component mounts
   useEffect(() => {
     fetchComunidades();
   }, []);
 
-  const handleHighlightCommunity = (comunidadId: string) => {
-    highlightCommunity(comunidadId); // Function to handle star click
-  };
-
   const renderItem = ({ item }: any) => (
     <View style={styles.card}>
       <TouchableWithoutFeedback
-        onPress={() => router.push(`/comunidadDetalle/${item.id}`)}
+        onPress={() => router.push(`/comunidadContent/${item.id}`)}
       >
         <View style={styles.cardContent}>
           <Text style={styles.cardTitle}>{item.nombreComunidad}</Text>
@@ -45,56 +44,60 @@ const ComunidadesView = () => {
         </View>
       </TouchableWithoutFeedback>
       <TouchableWithoutFeedback
-        onPress={() => handleHighlightCommunity(item.id)}
+        onPress={() => highlightCommunity(item.id, item.isHighlighted)}
       >
         <FontAwesome5
           name="star"
           size={24}
-          color={item.isHighlighted ? "#FFD700" : "#C0C0C0"} // Gold if highlighted, gray otherwise
+          color={item.isHighlighted ? "#FFD700" : "#C0C0C0"} // Amarillo si es favorito, gris si no
         />
       </TouchableWithoutFeedback>
     </View>
   );
 
-  if (isLoading) {
-    return (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loaderText}>Cargando comunidades...</Text>
-      </View>
-    );
-  }
-
-  if (errorMessage) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{errorMessage}</Text>
-        <TouchableWithoutFeedback onPress={fetchComunidades}>
-          <View style={styles.retryButton}>
-            <Text style={styles.retryButtonText}>Reintentar</Text>
-          </View>
-        </TouchableWithoutFeedback>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Comunidades</Text>
-        <Image
-          source={{
-            uri: "https://placehold.co/50x50",
-          }}
-          style={styles.profilePic}
+      {/* Buscador */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Buscar comunidades..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
         />
+        <TouchableOpacity onPress={filterComunidades} style={styles.searchButton}>
+          <FontAwesome5 name="search" size={18} color="white" />
+        </TouchableOpacity>
       </View>
-      <FlatList
-        data={comunidades}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderItem}
-        contentContainerStyle={styles.list}
-      />
+  
+      {isLoading ? (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#4CAF50" />
+          <Text style={styles.loaderText}>Cargando comunidades...</Text>
+        </View>
+      ) : errorMessage ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{errorMessage}</Text>
+          <TouchableWithoutFeedback onPress={fetchComunidades}>
+            <View style={styles.retryButton}>
+              <Text style={styles.retryButtonText}>Reintentar</Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
+      ) : comunidades.length === 0 ? ( // Verificar si no hay comunidades filtradas
+        <View style={styles.noResultsContainer}>
+          <Text style={styles.noResultsText}>
+            No hay comunidades que coincidan con tu búsqueda.
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={comunidades}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
+          contentContainerStyle={styles.list}
+        />
+      )}
     </View>
   );
 };
@@ -188,6 +191,39 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "#FFF",
+    borderRadius: 8,
+    marginBottom: 15,
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    borderWidth: 1,
+    borderColor: "#CCC",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+  },
+  searchButton: {
+    backgroundColor: "#4CAF50",
+    padding: 10,
+    marginLeft: 10,
+    borderRadius: 8,
+  },
+  noResultsContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+  },
+  noResultsText: {
+    fontSize: 16,
+    color: "#757575",
+    textAlign: "center",
   },
 });
 
