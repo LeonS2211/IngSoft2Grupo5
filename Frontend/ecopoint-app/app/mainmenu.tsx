@@ -26,7 +26,7 @@ const HomeScreen: React.FC = () => {
   const { puntos, isLoading, errorMessage } = useMapViewModel();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedPoint, setSelectedPoint] = useState<PuntoReciclaje | null>(
-    null,
+    null
   );
 
   const openModal = (punto: PuntoReciclaje) => {
@@ -67,7 +67,7 @@ const HomeScreen: React.FC = () => {
   }, []);
   return (
     <View style={styles.container}>
-      <View style={{ paddingBottom: insets.bottom }}>
+      <View style={{ flex: 1, paddingBottom: insets.bottom }}>
         {/* Encabezado */}
         <View style={styles.header}>
           <Text style={styles.welcomeText}>¡Bienvenido!</Text>
@@ -78,21 +78,28 @@ const HomeScreen: React.FC = () => {
               <Image
                 source={{
                   uri: "https://img.icons8.com/ios-filled/50/000000/user-male-circle.png",
-                }} // Imagen predeterminada de usuario
+                }}
                 style={styles.profilePic}
               />
             </View>
           </TouchableOpacity>
         </View>
 
-        {/* Ubicación actual */}
-        <View style={styles.locationContainer}>
-          <FontAwesome5 name="map-marker-alt" size={18} color="green" />
-          <Text style={styles.locationText}>Ubicación actual</Text>
+        {/* Botón para añadir sugerencia */}
+        <View style={styles.suggestionButtonContainer}>
+          <TouchableOpacity
+            style={styles.suggestionButton}
+            onPress={() => router.push("/sugerencia")}
+          >
+            <FontAwesome5 name="plus" size={16} color="white" />
+            <Text style={styles.suggestionButtonText}>
+              Sugerir Punto de Reciclaje
+            </Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Espacio vacío donde podrías poner el mapa u otra información */}
-        <View>
+        {/* Mapa */}
+        <View style={{ flex: 1 }}>
           {isLoading ? (
             <Text>Cargando puntos de reciclaje...</Text>
           ) : errorMessage ? (
@@ -135,56 +142,6 @@ const HomeScreen: React.FC = () => {
             </MapView>
           )}
         </View>
-
-        {/* Modal for Callout content */}
-        <Modal
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={closeModal}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              {/* Close button in the top right corner */}
-              <Pressable style={styles.closeButton} onPress={closeModal}>
-                <Text style={styles.closeButtonText}>✕</Text>
-              </Pressable>
-              {selectedPoint && (
-                <>
-                  <Text style={styles.calloutTitle}>
-                    {selectedPoint.nombre}
-                  </Text>
-                  <View style={styles.buttonContainer}>
-                    <Pressable
-                      style={styles.button}
-                      onPress={() => {
-                        setDestination({
-                          latitude: selectedPoint.getUbicacionCoords().latitud,
-                          longitude:
-                            selectedPoint.getUbicacionCoords().longitud,
-                        });
-                        closeModal();
-                      }}
-                    >
-                      <Text style={styles.buttonText}>
-                        Ir hacia el punto de reciclaje
-                      </Text>
-                    </Pressable>
-                    <Pressable
-                      style={styles.button}
-                      onPress={() => {
-                        closeModal();
-                        setDestination(null);
-                        router.push(`/scannerQR/${selectedPoint.nombre}`);
-                      }}
-                    >
-                      <Text style={styles.buttonText}>Escanear QR</Text>
-                    </Pressable>
-                  </View>
-                </>
-              )}
-            </View>
-          </View>
-        </Modal>
 
         {/* Barra de navegación inferior */}
         <BotBar />
@@ -279,9 +236,8 @@ const styles = StyleSheet.create({
     color: "gray",
   },
   map: {
-    height: "73%",
+    flex: 1, // Ocupa todo el espacio disponible
     width: "100%",
-    paddingBottom: 0,
   },
   calloutContainer: {
     width: 200, // Ajusta el ancho del Callout según prefieras
@@ -312,6 +268,32 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 14,
     textAlign: "center",
+  },
+  suggestionButtonContainer: {
+    marginVertical: 10,
+    alignItems: "center",
+  },
+
+  suggestionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 8, // Más delgado
+    backgroundColor: "#4CAF50",
+    borderRadius: 5,
+    width: "95%", // Cubre casi todo el ancho
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 2,
+    elevation: 3,
+  },
+
+  suggestionButtonText: {
+    marginLeft: 8,
+    color: "white",
+    fontSize: 14, // Ajustado para ser más compacto
+    fontWeight: "bold",
   },
 });
 
