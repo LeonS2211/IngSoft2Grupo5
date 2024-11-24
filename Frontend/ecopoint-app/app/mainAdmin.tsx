@@ -74,6 +74,16 @@ const MainAdmin: React.FC = () => {
       >
         <Text style={styles.buttonText}>Crear punto de reciclaje</Text>
       </TouchableOpacity>
+
+      {/* Botón para consultar sugerencias de puntos de reciclaje*/}
+      <TouchableOpacity
+        style={styles.informeButton}
+        onPress={() => router.push("/mirarSugerencias")}
+      >
+        <Text style={styles.buttonText}>
+          consultar sugerencias de puntos de reciclaje
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -118,6 +128,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: "#52734D",
     alignItems: "center",
+    justifyContent: "center", // Centra el contenido verticalmente
     marginVertical: 20,
     shadowColor: "#171717",
     shadowOffset: { width: 0, height: 3 },
@@ -128,23 +139,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "#FFFFFF",
-  },
-  userDetailsContainer: {
-    marginTop: 30,
-    width: "80%",
-    padding: 15,
-    borderRadius: 12,
-    backgroundColor: "#FFFFFF",
-    shadowColor: "#171717",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-  },
-  userDetailsTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: "#333333",
+    textAlign: "center", // Centra el texto horizontalmente
   },
 });
 
