@@ -74,7 +74,7 @@ const MainAdmin: React.FC = () => {
       >
         <Text style={styles.buttonText}>Crear punto de reciclaje</Text>
       </TouchableOpacity>
-
+      
       {/* Botón para consultar sugerencias de puntos de reciclaje*/}
       <TouchableOpacity
         style={styles.informeButton}
@@ -84,6 +84,15 @@ const MainAdmin: React.FC = () => {
           consultar sugerencias de puntos de reciclaje
         </Text>
       </TouchableOpacity>
+      
+      {/* Botón para gestion de comunidad*/}
+      <TouchableOpacity
+        style={styles.informeButton}
+        onPress={() => router.push("/gestionarComunidad")}
+      >
+        <Text style={styles.buttonText}>Gestionar comunidad</Text>
+      </TouchableOpacity>
+
     </View>
   );
 };
