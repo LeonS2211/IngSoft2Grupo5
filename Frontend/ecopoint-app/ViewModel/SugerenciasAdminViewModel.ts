@@ -1,51 +1,58 @@
 import { useState, useEffect } from "react";
-import UsuariosApi from "../api/usuario";
+import SugerenciaPuntoReciclajeApi from "../api/sugerenciaPuntoReciclaje";
 
-const SugerenciasAdminViewModel = () => {
-  const [users, setUsers] = useState([]); // Lista de los 10 primeros usuarios con msgSoporte
+const useSugerenciasViewModel = () => {
+  const [sugerencias, setSugerencias] = useState([]); // Lista de sugerencias
   const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const fetchTop10FirstUsers = async () => {
+  // Obtener sugerencias de la API
+  const fetchSugerencias = async () => {
     setIsLoading(true);
     setErrorMessage(null);
-
     try {
-      const response = await UsuariosApi.findAll(); // Obtener todos los usuarios
-
+      const response = await SugerenciaPuntoReciclajeApi.findAll();
       if (response?.status === 200) {
-        const sortedUsers = response.data
-          .filter(
-            (user) =>
-              user.msgSoporte &&
-              user.msgSoporte.trim() !== "" &&
-              user.msgResponseSoporte.trim() === ""
-          ) // Filtrar usuarios con msgSoporte
-          .sort((a, b) => new Date(a.fechaRegistro) - new Date(b.fechaRegistro)) // Ordenar por fecha de registro
-          .slice(0, 10); // Tomar los primeros 10 usuarios
-
-        setUsers(sortedUsers);
+        setSugerencias(response.data);
       } else {
-        setErrorMessage("Error al obtener la lista de usuarios.");
+        setErrorMessage("Error al obtener las sugerencias.");
       }
     } catch (error) {
-      console.error("Error al obtener usuarios:", error);
-      setErrorMessage("Ocurrió un error al intentar obtener los datos.");
+      console.error("Error al obtener sugerencias:", error);
+      setErrorMessage("Ocurrió un error al intentar obtener las sugerencias.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Eliminar sugerencia por ID
+  const deleteSugerencia = async (id: number) => {
+    try {
+      const response = await SugerenciaPuntoReciclajeApi.remove(id);
+      if (response?.status === 200) {
+        setSugerencias((prevSugerencias) =>
+          prevSugerencias.filter((sugerencia) => sugerencia.id !== id)
+        );
+      } else {
+        setErrorMessage("Error al eliminar la sugerencia.");
+      }
+    } catch (error) {
+      console.error("Error al eliminar sugerencia:", error);
+      setErrorMessage("No se pudo eliminar la sugerencia.");
+    }
+  };
+
   useEffect(() => {
-    fetchTop10FirstUsers();
+    fetchSugerencias();
   }, []);
 
   return {
-    users, // Lista de los 10 primeros usuarios
-    isLoading, // Estado de carga
-    errorMessage, // Mensaje de error
-    fetchTop10FirstUsers, // Método para actualizar manualmente
+    sugerencias,
+    isLoading,
+    errorMessage,
+    fetchSugerencias,
+    deleteSugerencia,
   };
 };
 
-export default SugerenciasAdminViewModel;
+export default useSugerenciasViewModel;
