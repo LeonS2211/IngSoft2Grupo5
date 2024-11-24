@@ -40,7 +40,8 @@
     "react-native-svg": "^15.9.0",
     "react-native-web": "^0.18.12",
     "react-spinners": "^0.14.1",
-    "styled-components": "^6.1.13"
+    "styled-components": "^6.1.13",
+    "react-native-reanimated": "~3.10.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

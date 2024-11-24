@@ -3,14 +3,16 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableWithoutFeedback,
-  FlatList,
-  ActivityIndicator,
   TextInput,
   TouchableOpacity,
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import Animated, {
+  LinearTransition,
+  SlideInDown,
+  SlideOutUp,
+} from "react-native-reanimated";
 import useComunidadViewModel from "../ViewModel/ComunidadesUserViewModel";
 
 const ComunidadesView = () => {
@@ -32,18 +34,22 @@ const ComunidadesView = () => {
   }, []);
 
   const renderItem = ({ item }: any) => (
-    <View style={styles.card}>
-      <TouchableWithoutFeedback
+    <Animated.View
+      style={styles.card}
+      layout={LinearTransition}
+      entering={SlideInDown.duration(300)}
+      exiting={SlideOutUp.duration(300)}
+    >
+      <TouchableOpacity
         onPress={() => router.push(`/comunidadContent/${item.id}`)}
+        style={styles.cardContent}
       >
-        <View style={styles.cardContent}>
-          <Text style={styles.cardTitle}>{item.nombreComunidad}</Text>
-          <Text style={styles.cardDescription}>
-            {item.descripcionComunidad}
-          </Text>
-        </View>
-      </TouchableWithoutFeedback>
-      <TouchableWithoutFeedback
+        <Text style={styles.cardTitle}>{item.nombreComunidad}</Text>
+        <Text style={styles.cardDescription}>
+          {item.descripcionComunidad}
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
         onPress={() => highlightCommunity(item.id, item.isHighlighted)}
       >
         <FontAwesome5
@@ -51,8 +57,8 @@ const ComunidadesView = () => {
           size={24}
           color={item.isHighlighted ? "#FFD700" : "#C0C0C0"} // Amarillo si es favorito, gris si no
         />
-      </TouchableWithoutFeedback>
-    </View>
+      </TouchableOpacity>
+    </Animated.View>
   );
 
   return (
@@ -65,33 +71,24 @@ const ComunidadesView = () => {
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
-        <TouchableOpacity onPress={filterComunidades} style={styles.searchButton}>
+        <TouchableOpacity
+          onPress={filterComunidades}
+          style={styles.searchButton}
+        >
           <FontAwesome5 name="search" size={18} color="white" />
         </TouchableOpacity>
       </View>
-  
+
       {isLoading ? (
         <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#4CAF50" />
           <Text style={styles.loaderText}>Cargando comunidades...</Text>
         </View>
       ) : errorMessage ? (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>{errorMessage}</Text>
-          <TouchableWithoutFeedback onPress={fetchComunidades}>
-            <View style={styles.retryButton}>
-              <Text style={styles.retryButtonText}>Reintentar</Text>
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-      ) : comunidades.length === 0 ? ( // Verificar si no hay comunidades filtradas
-        <View style={styles.noResultsContainer}>
-          <Text style={styles.noResultsText}>
-            No hay comunidades que coincidan con tu búsqueda.
-          </Text>
         </View>
       ) : (
-        <FlatList
+        <Animated.FlatList
           data={comunidades}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderItem}
@@ -108,27 +105,27 @@ const styles = StyleSheet.create({
     backgroundColor: "#F9F9F9",
     padding: 10,
   },
-  header: {
+  searchContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
     padding: 10,
-    backgroundColor: "#EAF6E5",
-    borderRadius: 10,
-    marginBottom: 10,
+    backgroundColor: "#FFF",
+    borderRadius: 8,
+    marginBottom: 15,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#357A38",
-  },
-  profilePic: {
-    width: 40,
+  searchInput: {
+    flex: 1,
     height: 40,
-    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#CCC",
+    borderRadius: 8,
+    paddingHorizontal: 10,
   },
-  list: {
-    paddingBottom: 20,
+  searchButton: {
+    backgroundColor: "#4CAF50",
+    padding: 10,
+    marginLeft: 10,
+    borderRadius: 8,
   },
   card: {
     flexDirection: "row",
@@ -159,7 +156,28 @@ const styles = StyleSheet.create({
   cardDescription: {
     fontSize: 14,
     color: "#757575",
-    marginBottom: 5,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "#EAF6E5",
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#357A38",
+  },
+  profilePic: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  list: {
+    paddingBottom: 20,
   },
   loaderContainer: {
     flex: 1,
@@ -191,28 +209,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "bold",
-  },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 10,
-    backgroundColor: "#FFF",
-    borderRadius: 8,
-    marginBottom: 15,
-  },
-  searchInput: {
-    flex: 1,
-    height: 40,
-    borderWidth: 1,
-    borderColor: "#CCC",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-  },
-  searchButton: {
-    backgroundColor: "#4CAF50",
-    padding: 10,
-    marginLeft: 10,
-    borderRadius: 8,
   },
   noResultsContainer: {
     flex: 1,
