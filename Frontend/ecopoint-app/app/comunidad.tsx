@@ -45,9 +45,7 @@ const ComunidadesView = () => {
         style={styles.cardContent}
       >
         <Text style={styles.cardTitle}>{item.nombreComunidad}</Text>
-        <Text style={styles.cardDescription}>
-          {item.descripcionComunidad}
-        </Text>
+        <Text style={styles.cardDescription}>{item.descripcionComunidad}</Text>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => highlightCommunity(item.id, item.isHighlighted)}

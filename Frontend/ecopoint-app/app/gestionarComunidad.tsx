@@ -1,107 +1,88 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  FlatList,
+  TextInput,
   TouchableOpacity,
-  Alert,
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import Animated, {
+  LinearTransition,
+  SlideInDown,
+  SlideOutUp,
+} from "react-native-reanimated";
+import useComunidadViewModel from "../ViewModel/ComunidadesAdminViewModel";
 
-const ComentariosAdminView = () => {
-  const comentarios = [
-    {
-      id: "1",
-      autor: "César Gutiérrez",
-      comentario: "Este es un comentario positivo sobre reciclaje.",
-      likes: 150,
-      banned: false,
-    },
-    {
-      id: "2",
-      autor: "Ana Larsson",
-      comentario: "Otro comentario útil sobre el impacto del reciclaje.",
-      likes: 120,
-      banned: false,
-    },
-  ];
+const ComunidadesAdminView = () => {
+  const router = useRouter();
 
-  const handleBanComment = (id: string) => {
-    Alert.alert(
-      "Confirmar baneo",
-      "¿Estás seguro de que deseas banear este comentario?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Banear",
-          style: "destructive",
-          onPress: () => {
-            console.log(`Comentario ${id} baneado`);
-            // Aquí puedes realizar la lógica para banear el comentario
-          },
-        },
-      ]
-    );
-  };
+  const {
+    comunidades,
+    isLoading,
+    errorMessage,
+    fetchComunidades,
+    filterComunidades,
+    searchQuery,
+    setSearchQuery,
+  } = useComunidadViewModel();
 
-  const handleDeleteComment = (id: string) => {
-    Alert.alert(
-      "Confirmar eliminación",
-      "¿Estás seguro de que deseas eliminar este comentario?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Eliminar",
-          style: "destructive",
-          onPress: () => {
-            console.log(`Comentario ${id} eliminado`);
-            // Aquí puedes realizar la lógica para eliminar el comentario
-          },
-        },
-      ]
-    );
-  };
+  useEffect(() => {
+    fetchComunidades();
+  }, []);
 
   const renderItem = ({ item }: any) => (
-    <View style={styles.card}>
-      <View style={styles.cardContent}>
-        <Text style={styles.cardAuthor}>
-          {item.autor}{" "}
-          {item.banned && <Text style={styles.bannedLabel}>(Baneado)</Text>}
-        </Text>
-        <Text style={styles.cardComment}>{item.comentario}</Text>
-      </View>
-      <View style={styles.actionButtons}>
-        {!item.banned && (
-          <TouchableOpacity
-            style={[styles.button, styles.banButton]}
-            onPress={() => handleBanComment(item.id)}
-          >
-            <FontAwesome5 name="ban" size={16} color="white" />
-            <Text style={styles.buttonText}>Suspender cuenta</Text>
-          </TouchableOpacity>
-        )}
-        <TouchableOpacity
-          style={[styles.button, styles.deleteButton]}
-          onPress={() => handleDeleteComment(item.id)}
-        >
-          <FontAwesome5 name="trash" size={16} color="white" />
-          <Text style={styles.buttonText}>Eliminar</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    <Animated.View
+      style={styles.card}
+      layout={LinearTransition}
+      entering={SlideInDown.duration(300)}
+      exiting={SlideOutUp.duration(300)}
+    >
+      <TouchableOpacity
+        onPress={() => router.push(`/GestionComunidad/${item.id}`)}
+        style={styles.cardContent}
+      >
+        <Text style={styles.cardTitle}>{item.nombreComunidad}</Text>
+        <Text style={styles.cardDescription}>{item.descripcionComunidad}</Text>
+      </TouchableOpacity>
+    </Animated.View>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Administrar Comentarios</Text>
-      <FlatList
-        data={comentarios}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        contentContainerStyle={styles.list}
-      />
+      {/* Buscador */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Buscar comunidades..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+        <TouchableOpacity
+          onPress={filterComunidades}
+          style={styles.searchButton}
+        >
+          <FontAwesome5 name="search" size={18} color="white" />
+        </TouchableOpacity>
+      </View>
+
+      {isLoading ? (
+        <View style={styles.loaderContainer}>
+          <Text style={styles.loaderText}>Cargando comunidades...</Text>
+        </View>
+      ) : errorMessage ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{errorMessage}</Text>
+        </View>
+      ) : (
+        <Animated.FlatList
+          data={comunidades}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
+          contentContainerStyle={styles.list}
+        />
+      )}
     </View>
   );
 };
@@ -112,17 +93,32 @@ const styles = StyleSheet.create({
     backgroundColor: "#F9F9F9",
     padding: 10,
   },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#357A38",
-    textAlign: "center",
-    marginBottom: 20,
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "#FFF",
+    borderRadius: 8,
+    marginBottom: 15,
   },
-  list: {
-    paddingBottom: 20,
+  searchInput: {
+    flex: 1,
+    height: 40,
+    borderWidth: 1,
+    borderColor: "#CCC",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+  },
+  searchButton: {
+    backgroundColor: "#4CAF50",
+    padding: 10,
+    marginLeft: 10,
+    borderRadius: 8,
   },
   card: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     backgroundColor: "#FFF9F2",
     padding: 15,
     marginBottom: 10,
@@ -136,51 +132,42 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   cardContent: {
-    marginBottom: 10,
+    flex: 1,
   },
-  cardAuthor: {
-    fontSize: 16,
+  cardTitle: {
+    fontSize: 18,
     fontWeight: "bold",
     color: "#357A38",
     marginBottom: 5,
   },
-  bannedLabel: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: "#FF5252",
-  },
-  cardComment: {
+  cardDescription: {
     fontSize: 14,
     color: "#757575",
-    marginBottom: 10,
   },
-  cardLikes: {
-    fontSize: 12,
-    color: "#999999",
+  list: {
+    paddingBottom: 20,
   },
-  actionButtons: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-  },
-  button: {
-    flexDirection: "row",
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
-    padding: 10,
-    borderRadius: 8,
-    marginLeft: 10,
   },
-  banButton: {
-    backgroundColor: "#FF5252",
+  loaderText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#757575",
   },
-  deleteButton: {
-    backgroundColor: "#757575",
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  buttonText: {
-    color: "white",
-    fontSize: 14,
-    fontWeight: "bold",
-    marginLeft: 5,
+  errorText: {
+    textAlign: "center",
+    color: "#FF5252",
+    fontSize: 16,
+    marginBottom: 20,
   },
 });
 
-export default ComentariosAdminView;
+export default ComunidadesAdminView;
