@@ -1,20 +1,16 @@
-GET https://backgrupo5-production.up.railway.app/puntoReciclaje
+GET https://backgrupo5-production.up.railway.app/comunidad
 ########
 
 
-POST https://backgrupo5-production.up.railway.app/usuario
+POST https://backgrupo5-production.up.railway.app/sugerenciaPuntoReciclaje
 Content-Type: application/json
 
 {
- "email": "usuario12@gmail.com", 
- "contraseña": "Usuario12!", 
- "puntos":15 , 
- "codigoAmistad":"ABCD214311",
- "nombre": "Usuario12!"
+ "ubicacionPropuestaLatitud" : -12.085888383439096,
+ "ubicacionPropuestaLongitud":  -76.97257284075022,
+ "descripcion": "descripcion3",
+ "idUsuario":  2
 }
-
-
-
 
 ###
 POST https://backgrupo5-production.up.railway.app/ubicacion
@@ -25,11 +21,12 @@ Content-Type: application/json
   "longitud": -76.97118773315323 
 }
 ###
-POST https://backgrupo5-production.up.railway.app/codigoQR
+POST https://backgrupo5-production.up.railway.app/comunidad
 Content-Type: application/json
 
 {
-  "contenido": "ecopoint2"
+  "nombreComunidad": "Historias inspiradoras",
+  "descripcionComunidad": "Compartir cómo la visita a un punto de reciclaje ha generado impacto en la comunidad o en el medio ambiente."
 }
 ###
 POST https://backgrupo5-production.up.railway.app/puntoReciclaje
