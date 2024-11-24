@@ -74,6 +74,14 @@ const MainAdmin: React.FC = () => {
       >
         <Text style={styles.buttonText}>Crear punto de reciclaje</Text>
       </TouchableOpacity>
+
+      {/* Botón para gestion de comunidad*/}
+      <TouchableOpacity
+        style={styles.informeButton}
+        onPress={() => router.push("/gestionarComunidad")}
+      >
+        <Text style={styles.buttonText}>Gestionar comunidad</Text>
+      </TouchableOpacity>
     </View>
   );
 };
