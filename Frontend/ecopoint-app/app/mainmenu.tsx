@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useRouter } from "expo-router"; // Uso de useRouter para la navegación
+import React, { useEffect, useState, useRef } from "react";
+import { useRouter } from "expo-router";
 import {
   View,
   Text,
@@ -9,11 +9,12 @@ import {
   Pressable,
   Modal,
 } from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons"; // Para los iconos de navegación
+import { FontAwesome5 } from "@expo/vector-icons";
 import MapView, { Marker } from "react-native-maps";
 import BotBar from "../components/BotBar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Location from "expo-location";
+import * as Notifications from "expo-notifications"; // Importamos Notifications
 import useMapViewModel from "../ViewModel/MapViewModel";
 import MapViewDirections from "react-native-maps-directions";
 import { PuntoReciclaje } from "../Models/puntoReciclajeModel";
@@ -22,57 +23,139 @@ import { GOOGLE_MAPS_KEY } from "@env";
 const RecBin = require("../assets/RecycleBin.png");
 
 const HomeScreen: React.FC = () => {
-  const router = useRouter(); // Hook de router para la navegación
+  const router = useRouter();
   const { puntos, isLoading, errorMessage } = useMapViewModel();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedPoint, setSelectedPoint] = useState<PuntoReciclaje | null>(
     null
   );
 
-  const openModal = (punto: PuntoReciclaje) => {
-    setSelectedPoint(punto);
-    setModalVisible(true);
-  };
-  const closeModal = () => {
-    setModalVisible(false);
-    setSelectedPoint(null);
-  };
   const [origin, setOrigin] = useState({
     latitude: -12.08511625487562,
     longitude: -76.97726574392497,
   });
+  const locationSubscription = useRef<Location.LocationSubscription | null>(
+    null
+  ); // Usamos useRef para persistir entre renders
   const [destination, setDestination] = useState<{
     latitude: number;
     longitude: number;
   } | null>(null);
-  async function getLocationPermission() {
-    let { status } = await Location.requestForegroundPermissionsAsync();
+
+  const [hasNotified, setHasNotified] = useState(false); // Control de notificación
+
+  // Solicitar permisos para notificaciones
+  const requestNotificationPermissions = async () => {
+    const { status } = await Notifications.requestPermissionsAsync();
     if (status !== "granted") {
-      alert("Permission denied");
+      alert("Se requieren permisos para mostrar notificaciones.");
+    }
+  };
+
+  const openModal = (punto: PuntoReciclaje) => {
+    setSelectedPoint(punto);
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedPoint(null);
+  };
+
+  // Solicitar permisos y activar seguimiento de ubicación
+  const startLocationUpdates = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      alert("Se requiere permiso para acceder a tu ubicación.");
       return;
     }
 
-    let location = await Location.getCurrentPositionAsync({});
-    const current = {
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-    };
-    setOrigin(current);
-  }
+    locationSubscription.current = await Location.watchPositionAsync(
+      {
+        accuracy: Location.Accuracy.High,
+        distanceInterval: 30, // Actualizar cada 30 metros
+      },
+      async (location) => {
+        const userLocation = {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        };
+        setOrigin(userLocation);
+
+        // Verificar si el usuario está cerca del destino
+        if (destination) {
+          const distance = getDistance(userLocation, destination); // Calcula la distancia
+          if (distance <= 50 && !hasNotified) {
+            // Enviar notificación solo si no se ha enviado
+            await sendNotification();
+            setHasNotified(true); // Marcar como notificado
+          } else if (distance > 50) {
+            // Si el usuario se aleja, reiniciar la condición
+            setHasNotified(false);
+          }
+        }
+      }
+    );
+  };
+
+  // Detener seguimiento de ubicación
+  const stopLocationUpdates = () => {
+    if (locationSubscription.current) {
+      locationSubscription.current.remove();
+      locationSubscription.current = null;
+    }
+  };
+
+  // Calcular la distancia entre dos puntos usando la fórmula de Haversine
+  const getDistance = (
+    origin: { latitude: number; longitude: number },
+    destination: { latitude: number; longitude: number }
+  ) => {
+    const R = 6371e3; // Radio de la Tierra en metros
+    const φ1 = (origin.latitude * Math.PI) / 180;
+    const φ2 = (destination.latitude * Math.PI) / 180;
+    const Δφ = ((destination.latitude - origin.latitude) * Math.PI) / 180;
+    const Δλ = ((destination.longitude - origin.longitude) * Math.PI) / 180;
+
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // Distancia en metros
+  };
+
+  // Enviar notificación
+  const sendNotification = async () => {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "¡Estás cerca!",
+        body: "Estás a menos de 50 metros de tu destino.",
+        sound: "default",
+      },
+      trigger: null, // Inmediatamente
+    });
+  };
 
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    getLocationPermission();
-  }, []);
+    // Solicitar permisos de notificaciones al cargar la pantalla
+    requestNotificationPermissions();
+    startLocationUpdates();
+
+    // Detener seguimiento de ubicación al desmontar el componente
+    return () => {
+      stopLocationUpdates();
+    };
+  }, [destination]);
+
   return (
     <View style={styles.container}>
       <View style={{ flex: 1, paddingBottom: insets.bottom }}>
         {/* Encabezado */}
         <View style={styles.header}>
           <Text style={styles.welcomeText}>¡Bienvenido!</Text>
-
-          {/* Imagen de perfil con navegación a ProfileScreen */}
           <TouchableOpacity onPress={() => router.push("/profileScreen")}>
             <View style={styles.profileContainer}>
               <Image
@@ -107,7 +190,7 @@ const HomeScreen: React.FC = () => {
           ) : (
             <MapView
               style={styles.map}
-              initialRegion={{
+              region={{
                 latitude: origin.latitude,
                 longitude: origin.longitude,
                 latitudeDelta: 0.01,
@@ -142,6 +225,54 @@ const HomeScreen: React.FC = () => {
             </MapView>
           )}
         </View>
+        {/* Modal para detalles del marcador */}
+        <Modal
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={closeModal}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Pressable style={styles.closeButton} onPress={closeModal}>
+                <Text style={styles.closeButtonText}>✕</Text>
+              </Pressable>
+              {selectedPoint && (
+                <>
+                  <Text style={styles.calloutTitle}>
+                    {selectedPoint.nombre}
+                  </Text>
+                  <View style={styles.buttonContainer}>
+                    <Pressable
+                      style={styles.button}
+                      onPress={() => {
+                        setDestination({
+                          latitude: selectedPoint.getUbicacionCoords().latitud,
+                          longitude:
+                            selectedPoint.getUbicacionCoords().longitud,
+                        });
+                        closeModal();
+                      }}
+                    >
+                      <Text style={styles.buttonText}>
+                        Ir hacia el punto de reciclaje
+                      </Text>
+                    </Pressable>
+                    <Pressable
+                      style={styles.button}
+                      onPress={() => {
+                        closeModal();
+                        setDestination(null);
+                        router.push(`/scannerQR/${selectedPoint.nombre}`);
+                      }}
+                    >
+                      <Text style={styles.buttonText}>Escanear QR</Text>
+                    </Pressable>
+                  </View>
+                </>
+              )}
+            </View>
+          </View>
+        </Modal>
 
         {/* Barra de navegación inferior */}
         <BotBar />

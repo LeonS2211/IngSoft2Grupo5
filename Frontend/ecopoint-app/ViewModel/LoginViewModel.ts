@@ -7,23 +7,17 @@ const useLoginViewModel = () => {
   const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  // Expresión regular para validar el correo
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  // Función para manejar el envío del formulario
   const onSubmit = async () => {
     setIsLoading(true);
     setErrorMessage(null);
-
     try {
       if (!emailRegex.test(email)) {
         setErrorMessage("Por favor, introduce un correo electrónico válido.");
         return false;
       }
-
       const response = await UsuariosApi.findAll();
-
       if (response?.status === 200) {
         const usuario = response.data.find(
           (user) => user.email === email && user.contraseña === password

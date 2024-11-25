@@ -2,7 +2,6 @@ import { useState } from "react";
 import UbicacionesApi from "../api/ubicacion";
 import SugerenciaPuntoReciclajeApi from "../api/sugerenciaPuntoReciclaje";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { FA5Style } from "@expo/vector-icons/build/FontAwesome5";
 
 const useSugerenciaViewModel = () => {
   const [descripcion, setDescripcion] = useState<string>("");
