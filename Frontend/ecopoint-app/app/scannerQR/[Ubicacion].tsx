@@ -89,9 +89,6 @@ export default function ScannerQR() {
           {errorMessage && <Text>{errorMessage}</Text>}
         </View>
       )}
-
-      {/* Barra inferior con iconos */}
-      <BotBar />
     </View>
   );
 }

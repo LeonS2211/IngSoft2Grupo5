@@ -22,9 +22,14 @@
       },
       "permissions": [
         "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO"
+        "android.permission.RECORD_AUDIO",
+        "NOTIFICATIONS"
       ],
-      "package": "com.anonymous.ecopointapp"
+      "package": "com.anonymous.ecopointapp",
+      "notification": {
+        "icon": "./assets/notification-icon.png",
+        "color": "#4CAF50"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
