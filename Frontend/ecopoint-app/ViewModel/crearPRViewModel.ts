@@ -163,6 +163,7 @@ const usePuntoReciclajeViewModel = () => {
     setLongitud,
     setContenidoQR,
     createPuntoReciclaje,
+    validarCoordenadas,
   };
 };
 
