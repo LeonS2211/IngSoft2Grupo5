@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "expo-router";
 import {
   View,
@@ -34,12 +34,15 @@ const HomeScreen: React.FC = () => {
     latitude: -12.08511625487562,
     longitude: -76.97726574392497,
   });
-  const [locationSubscription, setLocationSubscription] =
-    useState<Location.LocationSubscription | null>(null);
+  const locationSubscription = useRef<Location.LocationSubscription | null>(
+    null
+  ); // Usamos useRef para persistir entre renders
   const [destination, setDestination] = useState<{
     latitude: number;
     longitude: number;
   } | null>(null);
+
+  const [hasNotified, setHasNotified] = useState(false); // Control de notificación
 
   // Solicitar permisos para notificaciones
   const requestNotificationPermissions = async () => {
@@ -53,6 +56,7 @@ const HomeScreen: React.FC = () => {
     setSelectedPoint(punto);
     setModalVisible(true);
   };
+
   const closeModal = () => {
     setModalVisible(false);
     setSelectedPoint(null);
@@ -66,11 +70,10 @@ const HomeScreen: React.FC = () => {
       return;
     }
 
-    const subscription = await Location.watchPositionAsync(
+    locationSubscription.current = await Location.watchPositionAsync(
       {
         accuracy: Location.Accuracy.High,
-        timeInterval: 1000, // Actualizar cada 1 segundo
-        distanceInterval: 5, // Actualizar cada 5 metros
+        distanceInterval: 30, // Actualizar cada 30 metros
       },
       async (location) => {
         const userLocation = {
@@ -82,21 +85,24 @@ const HomeScreen: React.FC = () => {
         // Verificar si el usuario está cerca del destino
         if (destination) {
           const distance = getDistance(userLocation, destination); // Calcula la distancia
-          if (distance <= 50) {
-            await sendNotification(); // Enviar notificación
+          if (distance <= 50 && !hasNotified) {
+            // Enviar notificación solo si no se ha enviado
+            await sendNotification();
+            setHasNotified(true); // Marcar como notificado
+          } else if (distance > 50) {
+            // Si el usuario se aleja, reiniciar la condición
+            setHasNotified(false);
           }
         }
       }
     );
-
-    setLocationSubscription(subscription);
   };
 
   // Detener seguimiento de ubicación
   const stopLocationUpdates = () => {
-    if (locationSubscription) {
-      locationSubscription.remove();
-      setLocationSubscription(null);
+    if (locationSubscription.current) {
+      locationSubscription.current.remove();
+      locationSubscription.current = null;
     }
   };
 
@@ -137,10 +143,12 @@ const HomeScreen: React.FC = () => {
     // Solicitar permisos de notificaciones al cargar la pantalla
     requestNotificationPermissions();
     startLocationUpdates();
+
+    // Detener seguimiento de ubicación al desmontar el componente
     return () => {
       stopLocationUpdates();
     };
-  }, []);
+  }, [destination]);
 
   return (
     <View style={styles.container}>
