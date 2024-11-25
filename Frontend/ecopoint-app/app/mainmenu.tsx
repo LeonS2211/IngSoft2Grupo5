@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useRouter } from "expo-router"; // Uso de useRouter para la navegación
+import React, { useEffect, useState, useRef } from "react";
+import { useRouter } from "expo-router";
 import {
   View,
   Text,
@@ -9,11 +9,12 @@ import {
   Pressable,
   Modal,
 } from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons"; // Para los iconos de navegación
+import { FontAwesome5 } from "@expo/vector-icons";
 import MapView, { Marker } from "react-native-maps";
 import BotBar from "../components/BotBar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Location from "expo-location";
+import * as Notifications from "expo-notifications"; // Importamos Notifications
 import useMapViewModel from "../ViewModel/MapViewModel";
 import MapViewDirections from "react-native-maps-directions";
 import { PuntoReciclaje } from "../Models/puntoReciclajeModel";
@@ -22,77 +23,166 @@ import { GOOGLE_MAPS_KEY } from "@env";
 const RecBin = require("../assets/RecycleBin.png");
 
 const HomeScreen: React.FC = () => {
-  const router = useRouter(); // Hook de router para la navegación
+  const router = useRouter();
   const { puntos, isLoading, errorMessage } = useMapViewModel();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedPoint, setSelectedPoint] = useState<PuntoReciclaje | null>(
-    null,
+    null
   );
+
+  const [origin, setOrigin] = useState({
+    latitude: -12.08511625487562,
+    longitude: -76.97726574392497,
+  });
+  const locationSubscription = useRef<Location.LocationSubscription | null>(
+    null
+  ); // Usamos useRef para persistir entre renders
+  const [destination, setDestination] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
+
+  const [hasNotified, setHasNotified] = useState(false); // Control de notificación
+
+  // Solicitar permisos para notificaciones
+  const requestNotificationPermissions = async () => {
+    const { status } = await Notifications.requestPermissionsAsync();
+    if (status !== "granted") {
+      alert("Se requieren permisos para mostrar notificaciones.");
+    }
+  };
 
   const openModal = (punto: PuntoReciclaje) => {
     setSelectedPoint(punto);
     setModalVisible(true);
   };
+
   const closeModal = () => {
     setModalVisible(false);
     setSelectedPoint(null);
   };
-  const [origin, setOrigin] = useState({
-    latitude: -12.08511625487562,
-    longitude: -76.97726574392497,
-  });
-  const [destination, setDestination] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
-  async function getLocationPermission() {
-    let { status } = await Location.requestForegroundPermissionsAsync();
+
+  // Solicitar permisos y activar seguimiento de ubicación
+  const startLocationUpdates = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
-      alert("Permission denied");
+      alert("Se requiere permiso para acceder a tu ubicación.");
       return;
     }
 
-    let location = await Location.getCurrentPositionAsync({});
-    const current = {
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-    };
-    setOrigin(current);
-  }
+    locationSubscription.current = await Location.watchPositionAsync(
+      {
+        accuracy: Location.Accuracy.High,
+        distanceInterval: 30, // Actualizar cada 30 metros
+      },
+      async (location) => {
+        const userLocation = {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        };
+        setOrigin(userLocation);
+
+        // Verificar si el usuario está cerca del destino
+        if (destination) {
+          const distance = getDistance(userLocation, destination); // Calcula la distancia
+          if (distance <= 50 && !hasNotified) {
+            // Enviar notificación solo si no se ha enviado
+            await sendNotification();
+            setHasNotified(true); // Marcar como notificado
+          } else if (distance > 50) {
+            // Si el usuario se aleja, reiniciar la condición
+            setHasNotified(false);
+          }
+        }
+      }
+    );
+  };
+
+  // Detener seguimiento de ubicación
+  const stopLocationUpdates = () => {
+    if (locationSubscription.current) {
+      locationSubscription.current.remove();
+      locationSubscription.current = null;
+    }
+  };
+
+  // Calcular la distancia entre dos puntos usando la fórmula de Haversine
+  const getDistance = (
+    origin: { latitude: number; longitude: number },
+    destination: { latitude: number; longitude: number }
+  ) => {
+    const R = 6371e3; // Radio de la Tierra en metros
+    const φ1 = (origin.latitude * Math.PI) / 180;
+    const φ2 = (destination.latitude * Math.PI) / 180;
+    const Δφ = ((destination.latitude - origin.latitude) * Math.PI) / 180;
+    const Δλ = ((destination.longitude - origin.longitude) * Math.PI) / 180;
+
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // Distancia en metros
+  };
+
+  // Enviar notificación
+  const sendNotification = async () => {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "¡Estás cerca!",
+        body: "Estás a menos de 50 metros de tu destino.",
+        sound: "default",
+      },
+      trigger: null, // Inmediatamente
+    });
+  };
 
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    getLocationPermission();
-  }, []);
+    // Solicitar permisos de notificaciones al cargar la pantalla
+    requestNotificationPermissions();
+    startLocationUpdates();
+
+    // Detener seguimiento de ubicación al desmontar el componente
+    return () => {
+      stopLocationUpdates();
+    };
+  }, [destination]);
+
   return (
     <View style={styles.container}>
-      <View style={{ paddingBottom: insets.bottom }}>
+      <View style={{ flex: 1, paddingBottom: insets.bottom }}>
         {/* Encabezado */}
         <View style={styles.header}>
           <Text style={styles.welcomeText}>¡Bienvenido!</Text>
-
-          {/* Imagen de perfil con navegación a ProfileScreen */}
           <TouchableOpacity onPress={() => router.push("/profileScreen")}>
             <View style={styles.profileContainer}>
               <Image
                 source={{
                   uri: "https://img.icons8.com/ios-filled/50/000000/user-male-circle.png",
-                }} // Imagen predeterminada de usuario
+                }}
                 style={styles.profilePic}
               />
             </View>
           </TouchableOpacity>
         </View>
 
-        {/* Ubicación actual */}
-        <View style={styles.locationContainer}>
-          <FontAwesome5 name="map-marker-alt" size={18} color="green" />
-          <Text style={styles.locationText}>Ubicación actual</Text>
+        {/* Botón para añadir sugerencia */}
+        <View style={styles.suggestionButtonContainer}>
+          <TouchableOpacity
+            style={styles.suggestionButton}
+            onPress={() => router.push("/sugerencia")}
+          >
+            <FontAwesome5 name="plus" size={16} color="white" />
+            <Text style={styles.suggestionButtonText}>
+              Sugerir Punto de Reciclaje
+            </Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Espacio vacío donde podrías poner el mapa u otra información */}
-        <View>
+        {/* Mapa */}
+        <View style={{ flex: 1 }}>
           {isLoading ? (
             <Text>Cargando puntos de reciclaje...</Text>
           ) : errorMessage ? (
@@ -100,7 +190,7 @@ const HomeScreen: React.FC = () => {
           ) : (
             <MapView
               style={styles.map}
-              initialRegion={{
+              region={{
                 latitude: origin.latitude,
                 longitude: origin.longitude,
                 latitudeDelta: 0.01,
@@ -135,8 +225,7 @@ const HomeScreen: React.FC = () => {
             </MapView>
           )}
         </View>
-
-        {/* Modal for Callout content */}
+        {/* Modal para detalles del marcador */}
         <Modal
           transparent={true}
           visible={modalVisible}
@@ -144,7 +233,6 @@ const HomeScreen: React.FC = () => {
         >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
-              {/* Close button in the top right corner */}
               <Pressable style={styles.closeButton} onPress={closeModal}>
                 <Text style={styles.closeButtonText}>✕</Text>
               </Pressable>
@@ -279,9 +367,8 @@ const styles = StyleSheet.create({
     color: "gray",
   },
   map: {
-    height: "73%",
+    flex: 1, // Ocupa todo el espacio disponible
     width: "100%",
-    paddingBottom: 0,
   },
   calloutContainer: {
     width: 200, // Ajusta el ancho del Callout según prefieras
@@ -312,6 +399,32 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 14,
     textAlign: "center",
+  },
+  suggestionButtonContainer: {
+    marginVertical: 10,
+    alignItems: "center",
+  },
+
+  suggestionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 8, // Más delgado
+    backgroundColor: "#4CAF50",
+    borderRadius: 5,
+    width: "95%", // Cubre casi todo el ancho
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 2,
+    elevation: 3,
+  },
+
+  suggestionButtonText: {
+    marginLeft: 8,
+    color: "white",
+    fontSize: 14, // Ajustado para ser más compacto
+    fontWeight: "bold",
   },
 });
 

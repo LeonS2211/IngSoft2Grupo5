@@ -44,7 +44,7 @@ export default function ScannerSuccess() {
             <Text style={styles.infoText}>Puntaje actual:{userPuntaje}</Text>
           </View>
 
-          <Link push href={"/mainmenu"} asChild>
+          <Link replace href={"/mainmenu"} asChild>
             <Pressable style={styles.button}>
               <Text style={styles.buttonText}>Aceptar</Text>
             </Pressable>
